@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 font-sans;
+    font-family: 'Roboto', sans-serif;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Allow CV to span multiple pages */
+  #cv-template {
+    width: 210mm;
+    min-height: 297mm;
+    padding-top: 15mm;
+    padding-bottom: 15mm;
+    /* Remove height and overflow restrictions to allow page breaks */
+  }
+
+  /* Avoid breaking inside elements */
+  section,
+  .avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-top: 0;
+  }
+
+  /* Add spacing to sections that might start a new page */
+  section:not(:first-child) {
+    margin-top: 0.75rem;
+  }
+
+  /* Force page break before certain elements if needed */
+  .page-break-before {
+    page-break-before: always;
+    break-before: always;
+    padding-top: 1rem;
+  }
+
+  /* Prevent page break after certain elements */
+  h2,
+  h3,
+  h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* Hanging indent for bullet lists */
+  .hanging-indent {
+    padding-left: 1.25rem;
+    text-indent: -1.25rem;
+  }
+
+  /* Hide elements not needed for print */
+  .no-print {
+    display: none !important;
+  }
+}
