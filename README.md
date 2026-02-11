@@ -30,6 +30,14 @@ This project is ready to be deployed on Vercel.
    - `VITE_FIREBASE_APP_ID`
 4. **Deploy**: Click "Deploy" and Vercel will handle the build and hosting.
 
+### 5. Authorize Domain (CRITICAL)
+Firebase Authentication requires you to authorize your Vercel domain. If you see `auth/unauthorized-domain`:
+1. Go to the [Firebase Console](https://console.firebase.google.com/).
+2. Select your project.
+3. Go to **Authentication** > **Settings** > **Authorized domains**.
+4. Click **Add domain** and enter your Vercel URL (e.g., `cv-maker-by-zaakir.vercel.app`).
+5. Click **Add**.
+
 ## Development
 
 ```bash
