@@ -3,401 +3,441 @@ import PropTypes from "prop-types";
 import { useAuth } from "./AuthContext";
 import { db } from "../services/firebase";
 import { ref, onValue, set } from "firebase/database";
+import { uploadToCloudinary } from "../services/cloudinary";
+import { blobToBase64 } from "../utils/fileUtils";
 
 const ResumeContext = createContext();
 
 const initialResumeState = {
-    metadata: {
-        templateId: "modern",
-        themeColor: "#3B82F6",
+  metadata: {
+    templateId: "modern",
+    themeColor: "#3B82F6",
+  },
+  personal: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    photoUrl: "",
+    summary: "",
+    birthDate: "",
+    civilStatus: "",
+    gender: "",
+    nationality: "",
+    website: "",
+    signatureUrl: "",
+  },
+  experience: [
+    {
+      id: 1,
+      company: "",
+      role: "",
+      startDate: "",
+      endDate: "",
+      description: "",
     },
-    personal: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        photoUrl: "",
-        summary: "",
-        birthDate: "",
-        civilStatus: "",
-        gender: "",
-        nationality: "",
-        website: "",
-        signatureUrl: "",
-    },
-    experience: [
-        {
-            id: 1,
-            company: "",
-            role: "",
-            startDate: "",
-            endDate: "",
-            description: "",
-        },
-    ],
-    education: [],
-    skills: [],
-    languages: [],
-    certificates: [],
-    references: [],
-    internships: [],
+  ],
+  education: [],
+  skills: [],
+  languages: [],
+  certificates: [],
+  references: [],
+  internships: [],
 };
 
 export const ResumeProvider = ({ children }) => {
-    const { user } = useAuth();
-    const [resumeData, setResumeData] = useState(() => {
-        // Initialize from local storage if strict mode isn't an issue, but
-        // depending on flow, we might want to wait for Auth. 
-        // For now, let's just initialize safe default or local storage.
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem("resumeData");
-            return saved ? JSON.parse(saved) : initialResumeState;
-        }
-        return initialResumeState;
-    });
-    const [isLoaded, setIsLoaded] = useState(false);
+  const { user } = useAuth();
+  const [resumeData, setResumeData] = useState(() => {
+    // Initialize from local storage if strict mode isn't an issue, but
+    // depending on flow, we might want to wait for Auth.
+    // For now, let's just initialize safe default or local storage.
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("resumeData");
+      return saved ? JSON.parse(saved) : initialResumeState;
+    }
+    return initialResumeState;
+  });
+  const [isLoaded, setIsLoaded] = useState(false);
 
-    // Load data on mount or user change
-    useEffect(() => {
+  // Load data on mount or user change
+  useEffect(() => {
+    if (user) {
+      // Logged in: Load from Firebase RTDB
+      const userRef = ref(db, `users/${user.uid}/resume`);
+      const unsubscribe = onValue(userRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Ensure all arrays exist, merge with initialResumeState to prevent undefined errors
+          setResumeData({
+            ...initialResumeState,
+            ...data,
+            experience: data.experience || initialResumeState.experience,
+            education: data.education || initialResumeState.education,
+            skills: data.skills || initialResumeState.skills,
+            languages: data.languages || initialResumeState.languages,
+            certificates: data.certificates || initialResumeState.certificates,
+            references: data.references || initialResumeState.references,
+            internships: data.internships || initialResumeState.internships,
+            metadata: {
+              ...initialResumeState.metadata,
+              ...(data.metadata || {}),
+              themeColor:
+                data.metadata?.themeColor ||
+                initialResumeState.metadata.themeColor,
+            },
+            personal: {
+              ...initialResumeState.personal,
+              ...(data.personal || {}),
+            },
+          });
+          setHasUnsavedChanges(false); // Data just loaded, no unsaved changes
+        } else {
+          // New user: Load initial state
+          setResumeData(initialResumeState);
+          setHasUnsavedChanges(false);
+        }
+        setIsLoaded(true);
+      });
+      return () => unsubscribe();
+    } else if (!isLoaded) {
+      // If logout or guest: We already initialized from local storage.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      setIsLoaded(true);
+    }
+  }, [user]);
+
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingPhoto, setPendingPhoto] = useState(null);
+  const [pendingSignature, setPendingSignature] = useState(null);
+
+  // Save to Local Storage always (as backup/guest mode)
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem("resumeData", JSON.stringify(resumeData));
+
+    // Mark as having unsaved changes (only for logged-in users OR if there are pending uploads)
+    // Pending uploads need "Save" to be processed (Base64 for guest, Cloudinary for user)
+    if (user || pendingPhoto || pendingSignature) {
+      setHasUnsavedChanges(true);
+    }
+  }, [resumeData, user, isLoaded, pendingPhoto, pendingSignature]);
+
+  const saveResume = async () => {
+    try {
+      let updatedData = { ...resumeData };
+
+      // Handle Photo
+      if (pendingPhoto) {
+        let photoUrl;
         if (user) {
-            // Logged in: Load from Firebase RTDB
-            const userRef = ref(db, `users/${user.uid}/resume`);
-            const unsubscribe = onValue(userRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Ensure all arrays exist, merge with initialResumeState to prevent undefined errors
-                    setResumeData({
-                        ...initialResumeState,
-                        ...data,
-                        experience: data.experience || initialResumeState.experience,
-                        education: data.education || initialResumeState.education,
-                        skills: data.skills || initialResumeState.skills,
-                        languages: data.languages || initialResumeState.languages,
-                        certificates: data.certificates || initialResumeState.certificates,
-                        references: data.references || initialResumeState.references,
-                        internships: data.internships || initialResumeState.internships,
-                        metadata: {
-                            ...initialResumeState.metadata,
-                            ...(data.metadata || {}),
-                            themeColor: data.metadata?.themeColor || initialResumeState.metadata.themeColor,
-                        },
-                        personal: {
-                            ...initialResumeState.personal,
-                            ...(data.personal || {}),
-                        },
-                    });
-                    setHasUnsavedChanges(false); // Data just loaded, no unsaved changes
-                } else {
-                    // New user: Load initial state
-                    setResumeData(initialResumeState);
-                    setHasUnsavedChanges(false);
-                }
-                setIsLoaded(true);
-            });
-            return () => unsubscribe();
-        } else if (!isLoaded) {
-            // If logout or guest: We already initialized from local storage.
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            setIsLoaded(true);
+          photoUrl = await uploadToCloudinary(pendingPhoto);
+        } else {
+          photoUrl = await blobToBase64(pendingPhoto);
         }
-    }, [user]);
+        updatedData.personal.photoUrl = photoUrl;
+        setPendingPhoto(null);
+      }
 
-    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-    // Mark as having unsaved changes when data changes
-    useEffect(() => {
-        if (!isLoaded) return;
-
-        // Save to Local Storage always (as backup/guest mode)
-        localStorage.setItem("resumeData", JSON.stringify(resumeData));
-
-        // Mark as having unsaved changes (only for logged-in users)
+      // Handle Signature
+      if (pendingSignature) {
+        let signatureUrl;
         if (user) {
-            setHasUnsavedChanges(true);
+          signatureUrl = await uploadToCloudinary(pendingSignature);
+        } else {
+          signatureUrl = await blobToBase64(pendingSignature);
         }
-    }, [resumeData, user, isLoaded]);
+        updatedData.personal.signatureUrl = signatureUrl;
+        setPendingSignature(null);
+      }
 
-    // Manual save function
-    const saveResume = async () => {
-        if (!user) {
-            // Guest mode: Already saved to localStorage
-            return;
-        }
+      // Update state (triggers localStorage save via useEffect)
+      setResumeData(updatedData);
 
-        try {
-            const userRef = ref(db, `users/${user.uid}/resume`);
-            await set(userRef, resumeData);
-            setHasUnsavedChanges(false);
-            return { success: true };
-        } catch (err) {
-            console.error("Error saving to DB", err);
-            return { success: false, error: err };
-        }
-    };
+      if (user) {
+        const userRef = ref(db, `users/${user.uid}/resume`);
+        await set(userRef, updatedData);
+      }
 
-    const updateSection = (section, data) => {
-        setResumeData((prev) => ({
-            ...prev,
-            [section]: { ...prev[section], ...data },
-        }));
-    };
+      setHasUnsavedChanges(false);
+      return { success: true };
+    } catch (err) {
+      console.error("Error saving resume:", err);
+      return { success: false, error: err };
+    }
+  };
 
-    const updateExperience = (id, field, value) => {
-        setResumeData((prev) => ({
-            ...prev,
-            experience: prev.experience.map((exp) =>
-                exp.id === id ? { ...exp, [field]: value } : exp
-            ),
-        }));
-    };
+  const updateSection = (section, data) => {
+    setResumeData((prev) => ({
+      ...prev,
+      [section]: { ...prev[section], ...data },
+    }));
+  };
 
-    const addExperience = () => {
-        setResumeData((prev) => ({
-            ...prev,
-            experience: [
-                ...prev.experience,
-                {
-                    id: Date.now(), // Generate unique ID
-                    company: "",
-                    role: "",
-                    startDate: "",
-                    endDate: "",
-                    description: "",
-                },
-            ],
-        }));
-    };
+  const updateExperience = (id, field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      experience: prev.experience.map((exp) =>
+        exp.id === id ? { ...exp, [field]: value } : exp,
+      ),
+    }));
+  };
 
-    const removeExperience = (id) => {
-        setResumeData((prev) => ({
-            ...prev,
-            experience: prev.experience.filter((exp) => exp.id !== id),
-        }));
-    };
+  const addExperience = () => {
+    setResumeData((prev) => ({
+      ...prev,
+      experience: [
+        ...prev.experience,
+        {
+          id: Date.now(), // Generate unique ID
+          company: "",
+          role: "",
+          startDate: "",
+          endDate: "",
+          description: "",
+        },
+      ],
+    }));
+  };
 
-    // Generic update for array items (Education, Skills similar logic could be added)
-    // For now, focusing on the provided schema. Skills is array of strings or objects? The prompt says "skills: []". Usually array of strings or objects {id, name, level}.
-    // Assuming simple strings or objects based on common patterns. I'll make it generic.
+  const removeExperience = (id) => {
+    setResumeData((prev) => ({
+      ...prev,
+      experience: prev.experience.filter((exp) => exp.id !== id),
+    }));
+  };
 
-    // Education Helpers
-    const updateEducationItem = (id, field, value) => {
-        setResumeData((prev) => ({
-            ...prev,
-            education: prev.education.map((edu) =>
-                edu.id === id ? { ...edu, [field]: value } : edu
-            ),
-        }));
-    };
+  // Generic update for array items (Education, Skills similar logic could be added)
+  // For now, focusing on the provided schema. Skills is array of strings or objects? The prompt says "skills: []". Usually array of strings or objects {id, name, level}.
+  // Assuming simple strings or objects based on common patterns. I'll make it generic.
 
-    const addEducation = () => {
-        setResumeData((prev) => ({
-            ...prev,
-            education: [
-                ...prev.education,
-                {
-                    id: Date.now(),
-                    school: "",
-                    degree: "",
-                    startDate: "",
-                    endDate: "",
-                    description: "",
-                },
-            ],
-        }));
-    };
+  // Education Helpers
+  const updateEducationItem = (id, field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      education: prev.education.map((edu) =>
+        edu.id === id ? { ...edu, [field]: value } : edu,
+      ),
+    }));
+  };
 
-    const removeEducation = (id) => {
-        setResumeData((prev) => ({
-            ...prev,
-            education: prev.education.filter((edu) => edu.id !== id),
-        }));
-    };
+  const addEducation = () => {
+    setResumeData((prev) => ({
+      ...prev,
+      education: [
+        ...prev.education,
+        {
+          id: Date.now(),
+          school: "",
+          degree: "",
+          startDate: "",
+          endDate: "",
+          description: "",
+        },
+      ],
+    }));
+  };
 
-    // Generic helper for reordering/updating full arrays if needed (drag and drop)
-    const setEducation = (newEducation) => {
-        setResumeData(prev => ({ ...prev, education: newEducation }));
-    };
+  const removeEducation = (id) => {
+    setResumeData((prev) => ({
+      ...prev,
+      education: prev.education.filter((edu) => edu.id !== id),
+    }));
+  };
 
-    const setSkills = (newSkills) => {
-        setResumeData(prev => ({ ...prev, skills: newSkills }));
-    };
+  // Generic helper for reordering/updating full arrays if needed (drag and drop)
+  const setEducation = (newEducation) => {
+    setResumeData((prev) => ({ ...prev, education: newEducation }));
+  };
 
-    // Languages CRUD
-    const addLanguage = () => {
-        setResumeData((prev) => ({
-            ...prev,
-            languages: [
-                ...prev.languages,
-                {
-                    id: Date.now(),
-                    language: "",
-                    proficiency: "intermediate",
-                },
-            ],
-        }));
-    };
+  const setSkills = (newSkills) => {
+    setResumeData((prev) => ({ ...prev, skills: newSkills }));
+  };
 
-    const updateLanguage = (id, field, value) => {
-        setResumeData((prev) => ({
-            ...prev,
-            languages: prev.languages.map((lang) =>
-                lang.id === id ? { ...lang, [field]: value } : lang
-            ),
-        }));
-    };
+  // Languages CRUD
+  const addLanguage = () => {
+    setResumeData((prev) => ({
+      ...prev,
+      languages: [
+        ...prev.languages,
+        {
+          id: Date.now(),
+          language: "",
+          proficiency: "intermediate",
+        },
+      ],
+    }));
+  };
 
-    const removeLanguage = (id) => {
-        setResumeData((prev) => ({
-            ...prev,
-            languages: prev.languages.filter((lang) => lang.id !== id),
-        }));
-    };
+  const updateLanguage = (id, field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      languages: prev.languages.map((lang) =>
+        lang.id === id ? { ...lang, [field]: value } : lang,
+      ),
+    }));
+  };
 
-    // Certificates CRUD
-    const addCertificate = () => {
-        setResumeData((prev) => ({
-            ...prev,
-            certificates: [
-                ...prev.certificates,
-                {
-                    id: Date.now(),
-                    name: "",
-                    issuer: "",
-                    date: "",
-                    url: "",
-                },
-            ],
-        }));
-    };
+  const removeLanguage = (id) => {
+    setResumeData((prev) => ({
+      ...prev,
+      languages: prev.languages.filter((lang) => lang.id !== id),
+    }));
+  };
 
-    const updateCertificate = (id, field, value) => {
-        setResumeData((prev) => ({
-            ...prev,
-            certificates: prev.certificates.map((cert) =>
-                cert.id === id ? { ...cert, [field]: value } : cert
-            ),
-        }));
-    };
+  // Certificates CRUD
+  const addCertificate = () => {
+    setResumeData((prev) => ({
+      ...prev,
+      certificates: [
+        ...prev.certificates,
+        {
+          id: Date.now(),
+          name: "",
+          issuer: "",
+          date: "",
+          url: "",
+        },
+      ],
+    }));
+  };
 
-    const removeCertificate = (id) => {
-        setResumeData((prev) => ({
-            ...prev,
-            certificates: prev.certificates.filter((cert) => cert.id !== id),
-        }));
-    };
+  const updateCertificate = (id, field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      certificates: prev.certificates.map((cert) =>
+        cert.id === id ? { ...cert, [field]: value } : cert,
+      ),
+    }));
+  };
 
-    // References CRUD
-    const addReference = () => {
-        setResumeData((prev) => ({
-            ...prev,
-            references: [
-                ...prev.references,
-                {
-                    id: Date.now(),
-                    name: "",
-                    position: "",
-                    company: "",
-                    email: "",
-                    phone: "",
-                },
-            ],
-        }));
-    };
+  const removeCertificate = (id) => {
+    setResumeData((prev) => ({
+      ...prev,
+      certificates: prev.certificates.filter((cert) => cert.id !== id),
+    }));
+  };
 
-    const updateReference = (id, field, value) => {
-        setResumeData((prev) => ({
-            ...prev,
-            references: prev.references.map((ref) =>
-                ref.id === id ? { ...ref, [field]: value } : ref
-            ),
-        }));
-    };
+  // References CRUD
+  const addReference = () => {
+    setResumeData((prev) => ({
+      ...prev,
+      references: [
+        ...prev.references,
+        {
+          id: Date.now(),
+          name: "",
+          position: "",
+          company: "",
+          email: "",
+          phone: "",
+        },
+      ],
+    }));
+  };
 
-    const removeReference = (id) => {
-        setResumeData((prev) => ({
-            ...prev,
-            references: prev.references.filter((ref) => ref.id !== id),
-        }));
-    };
+  const updateReference = (id, field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      references: prev.references.map((ref) =>
+        ref.id === id ? { ...ref, [field]: value } : ref,
+      ),
+    }));
+  };
 
-    const addInternship = () => {
-        setResumeData((prev) => ({
-            ...prev,
-            internships: [
-                ...prev.internships,
-                { id: Date.now(), company: "", role: "", startDate: "", endDate: "", description: "" },
-            ],
-        }));
-    };
+  const removeReference = (id) => {
+    setResumeData((prev) => ({
+      ...prev,
+      references: prev.references.filter((ref) => ref.id !== id),
+    }));
+  };
 
-    const updateInternship = (id, field, value) => {
-        setResumeData((prev) => ({
-            ...prev,
-            internships: prev.internships.map((intern) =>
-                intern.id === id ? { ...intern, [field]: value } : intern
-            ),
-        }));
-    };
+  const addInternship = () => {
+    setResumeData((prev) => ({
+      ...prev,
+      internships: [
+        ...prev.internships,
+        {
+          id: Date.now(),
+          company: "",
+          role: "",
+          startDate: "",
+          endDate: "",
+          description: "",
+        },
+      ],
+    }));
+  };
 
-    const removeInternship = (id) => {
-        setResumeData((prev) => ({
-            ...prev,
-            internships: prev.internships.filter((intern) => intern.id !== id),
-        }));
-    };
+  const updateInternship = (id, field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      internships: prev.internships.map((intern) =>
+        intern.id === id ? { ...intern, [field]: value } : intern,
+      ),
+    }));
+  };
 
-    const resetResume = () => {
-        setResumeData(initialResumeState);
-        localStorage.removeItem("resumeData");
-    };
+  const removeInternship = (id) => {
+    setResumeData((prev) => ({
+      ...prev,
+      internships: prev.internships.filter((intern) => intern.id !== id),
+    }));
+  };
 
-    const value = {
-        resumeData,
-        setResumeData, // Direct access if needed, but prefer helpers
-        updateSection,
-        updateExperience,
-        addExperience,
-        removeExperience,
-        updateEducation: setEducation, // Deprecated alias if needed or just use setEducation
-        updateSkills: setSkills, // Deprecated alias if needed or just use setSkills
-        setEducation,
-        setSkills,
-        addEducation,
-        removeEducation,
-        updateEducationItem,
-        resetResume,
-        saveResume,
-        hasUnsavedChanges,
-        // Languages
-        addLanguage,
-        updateLanguage,
-        removeLanguage,
-        // Certificates
-        addCertificate,
-        updateCertificate,
-        removeCertificate,
-        // References
-        addReference,
-        updateReference,
-        removeReference,
-        addInternship,
-        updateInternship,
-        removeInternship,
-    };
+  const resetResume = () => {
+    setResumeData(initialResumeState);
+    localStorage.removeItem("resumeData");
+  };
 
-    return (
-        <ResumeContext.Provider value={value}>{children}</ResumeContext.Provider>
-    );
+  const value = {
+    resumeData,
+    setResumeData, // Direct access if needed, but prefer helpers
+    updateSection,
+    updateExperience,
+    addExperience,
+    removeExperience,
+    updateEducation: setEducation, // Deprecated alias if needed or just use setEducation
+    updateSkills: setSkills, // Deprecated alias if needed or just use setSkills
+    setEducation,
+    setSkills,
+    addEducation,
+    removeEducation,
+    updateEducationItem,
+    resetResume,
+    saveResume,
+    hasUnsavedChanges,
+    // Languages
+    addLanguage,
+    updateLanguage,
+    removeLanguage,
+    // Certificates
+    addCertificate,
+    updateCertificate,
+    removeCertificate,
+    // References
+    addReference,
+    updateReference,
+    removeReference,
+    addInternship,
+    updateInternship,
+    removeInternship,
+    setPendingPhoto,
+    setPendingSignature,
+  };
+
+  return (
+    <ResumeContext.Provider value={value}>{children}</ResumeContext.Provider>
+  );
 };
 
 ResumeProvider.propTypes = {
-    children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export const useResume = () => {
-    const context = useContext(ResumeContext);
-    if (!context) {
-        throw new Error("useResume must be used within a ResumeProvider");
-    }
-    return context;
+  const context = useContext(ResumeContext);
+  if (!context) {
+    throw new Error("useResume must be used within a ResumeProvider");
+  }
+  return context;
 };
