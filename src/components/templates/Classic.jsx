@@ -20,14 +20,18 @@ const Classic = ({ data }) => {
     return (
         <div className="w-full h-full bg-white text-gray-900 font-serif relative" id="cv-template">
             
-            {/* Tabela Mestra para Gestão de Margens em Paginação */}
-            <table className="w-full print:-mt-[15mm]">
-                <thead className="h-0 print:h-[15mm]">
-                    <tr><td className="h-0 print:h-[15mm]"></td></tr>
+            {/* --- CORREÇÃO: Tabela Mestra para Margens --- */}
+            <table className="w-full">
+                <thead className="h-[15mm] print:h-[15mm]">
+                    {/* Este cabeçalho repete-se em todas as páginas criando a margem superior */}
+                    <tr><td className="h-[15mm] print:h-[15mm]"></td></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td className="p-8 align-top"> {/* Padding movido para aqui */}
+                        {/* O padding p-8 fica agora dentro da célula */}
+                        <td className="p-8 pt-0 align-top">
+                            
+                            {/* --- CONTEÚDO ORIGINAL --- */}
                             
                             {/* Header */}
                             <div className="text-center border-b-2 border-gray-800 pb-4 mb-6">
@@ -216,6 +220,8 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
                             </div>
+                            
+                            {/* --- FIM DO CONTEÚDO ORIGINAL --- */}
                         </td>
                     </tr>
                 </tbody>
