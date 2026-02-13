@@ -20,16 +20,20 @@ const Classic = ({ data }) => {
     return (
         <div className="w-full h-full bg-white text-gray-900 font-serif relative" id="cv-template">
             
-            {/* Tabela Mestra para Gestão de Margens (Cabeçalho Fantasma) */}
+            {/* Tabela Mestra */}
             <table className="w-full">
+                
+                {/* 1. CABEÇALHO FANTASMA (Margem Topo em todas as páginas) */}
                 <thead className="h-[15mm] print:h-[15mm]">
                     <tr><td className="h-[15mm] print:h-[15mm]"></td></tr>
                 </thead>
+
+                {/* 2. CONTEÚDO PRINCIPAL */}
                 <tbody>
                     <tr>
                         <td className="p-8 pt-0 align-top">
                             
-                            {/* --- HEADER --- */}
+                            {/* Header do CV */}
                             <div className="text-center border-b-2 border-gray-800 pb-4 mb-6">
                                 <h1 className="text-4xl font-bold uppercase tracking-widest mb-2">
                                     {personal.firstName} {personal.lastName}
@@ -50,10 +54,9 @@ const Classic = ({ data }) => {
                                 )}
                             </div>
 
-                            {/* --- CONTENT --- */}
+                            {/* Conteúdo do CV */}
                             <div className="space-y-6">
                                 
-                                {/* Summary */}
                                 {personal.summary && (
                                     <section>
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -65,7 +68,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Experience (REMOVI O 'break-inside-avoid' AQUI) */}
                                 {experience && experience.length > 0 && (
                                     <section>
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -73,8 +75,7 @@ const Classic = ({ data }) => {
                                         </h2>
                                         <div className="space-y-6">
                                             {experience.map((exp) => (
-                                                /* Removido className="break-inside-avoid" para permitir quebra de texto */
-                                                <div key={exp.id}> 
+                                                <div key={exp.id}>
                                                     <div className="flex justify-between items-baseline mb-1">
                                                         <h3 className="font-bold text-lg">{exp.role}</h3>
                                                         <span className="italic text-sm text-gray-600">
@@ -91,7 +92,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Internships (REMOVI O 'break-inside-avoid' AQUI) */}
                                 {internships && internships.length > 0 && (
                                     <section>
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -99,7 +99,6 @@ const Classic = ({ data }) => {
                                         </h2>
                                         <div className="space-y-6">
                                             {internships.map((intern) => (
-                                                /* Removido className="break-inside-avoid" */
                                                 <div key={intern.id}>
                                                     <div className="flex justify-between items-baseline mb-1">
                                                         <h3 className="font-bold text-lg">{intern.role}</h3>
@@ -117,7 +116,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Education (REMOVI O 'break-inside-avoid' AQUI) */}
                                 {education && education.length > 0 && (
                                     <section>
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -125,7 +123,6 @@ const Classic = ({ data }) => {
                                         </h2>
                                         <div className="space-y-4">
                                             {education.map((edu) => (
-                                                /* Removido className="break-inside-avoid" */
                                                 <div key={edu.id}>
                                                     <div className="flex justify-between items-baseline mb-1">
                                                         <h3 className="font-bold text-lg">{edu.school}</h3>
@@ -143,7 +140,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Skills (MANTIVE O 'break-inside-avoid' AQUI - Skills não devem partir a meio) */}
                                 {skills && skills.length > 0 && (
                                     <section className="break-inside-avoid">
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -159,7 +155,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Languages */}
                                 {languages && languages.length > 0 && (
                                     <section className="break-inside-avoid">
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -175,7 +170,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Certificates */}
                                 {certificates && certificates.length > 0 && (
                                     <section>
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -192,7 +186,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* References */}
                                 {references && references.length > 0 && (
                                     <section>
                                         <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
@@ -211,7 +204,6 @@ const Classic = ({ data }) => {
                                     </section>
                                 )}
 
-                                {/* Signature */}
                                 {personal.signatureUrl && (
                                     <section className="pt-8 flex flex-col items-center avoid-break">
                                         <img src={personal.signatureUrl} alt="Signature" className="max-h-20 mb-2" />
@@ -223,6 +215,12 @@ const Classic = ({ data }) => {
                         </td>
                     </tr>
                 </tbody>
+
+                {/* 3. RODAPÉ FANTASMA (A Mágica para a Margem de Baixo) */}
+                <tfoot className="h-[20mm] print:h-[20mm]">
+                    <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+                </tfoot>
+                
             </table>
         </div>
     );
