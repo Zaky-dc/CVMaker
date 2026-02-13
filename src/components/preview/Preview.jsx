@@ -18,7 +18,7 @@ const Preview = forwardRef((props, ref) => {
     const TemplateComponent = templates[templateId] || Modern;
 
     return (
-        <div ref={ref} className="w-full h-full">
+        <div ref={ref} className="w-full h-full" id="printable-cv">
             <TemplateComponent data={resumeData} />
         </div>
     );

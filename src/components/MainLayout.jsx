@@ -96,18 +96,33 @@ const MainLayout = ({ onBack }) => {
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: `Resume_${new Date().toISOString().split("T")[0]}`,
+    onAfterPrint: () => console.log("Printed successfully"),
     pageStyle: `
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            @media print {
-                body {
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                }
-            }
-        `,
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        #printable-cv {
+          transform: none !important;
+          width: 210mm !important;
+          height: auto !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          display: block !important;
+        }
+        /* Hide everything else just in case */
+        .no-print {
+          display: none !important;
+        }
+      }
+    `,
   });
 
   useEffect(() => {

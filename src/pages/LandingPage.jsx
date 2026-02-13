@@ -146,9 +146,9 @@ const LandingPage = ({ onStart }) => {
                         </div>
 
                         {/* Floating Badge */}
-                        <div className="absolute bottom-10 right-10 bg-primary text-white p-6 rounded-[32px] shadow-2xl animate-bounce-slow">
-                            <div className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">{t.pdfReady}</div>
-                            <Download size={32} />
+                        <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 bg-primary text-white p-3 md:p-6 rounded-[24px] md:rounded-[32px] shadow-2xl animate-bounce-slow">
+                            <div className="text-[10px] md:text-xs font-black uppercase tracking-widest opacity-80 mb-1">{t.pdfReady}</div>
+                            <Download size={20} className="md:w-8 md:h-8" />
                         </div>
                     </div>
                 </div>
@@ -228,12 +228,12 @@ const LandingPage = ({ onStart }) => {
 
                             {/* Bank BCI */}
                             <div className="group bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[24px] border border-slate-200 dark:border-slate-800 flex items-center gap-6 hover:border-primary/50 transition-all duration-300">
-                                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                                <div className="w-16 h-16 bg-primary rounded-2xl flex shrink-0 items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                                     <CreditCard size={32} />
                                 </div>
                                 <div className="overflow-hidden">
                                     <h4 className="font-black text-lg mb-1">BCI Bank</h4>
-                                    <p className="text-primary font-mono font-bold text-xs sm:text-sm truncate">
+                                    <p className="text-primary font-mono font-bold text-[10px] sm:text-sm break-all sm:break-normal">
                                         {t.paymentBank.split('Banco BCI: ')[1] || t.paymentBank.split('BCI Bank: ')[1]}
                                     </p>
                                 </div>
