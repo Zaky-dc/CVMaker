@@ -124,7 +124,7 @@ const Modern = ({ data }) => {
                       </h3>
                       <div className="space-y-4">
                         {experience.map((exp) => (
-                          <div key={exp.id} className="break-inside-avoid">
+                          <div key={exp.id}>
                             <div className="flex justify-between items-baseline">
                               <h4 className="font-bold text-gray-900">{exp.role}</h4>
                               <span className="text-xs text-gray-500 italic">
@@ -151,7 +151,7 @@ const Modern = ({ data }) => {
                       </h3>
                       <div className="space-y-4">
                         {internships.map((intern) => (
-                          <div key={intern.id} className="break-inside-avoid">
+                          <div key={intern.id}>
                             <div className="flex justify-between items-baseline">
                               <h4 className="font-bold text-gray-900">{intern.role}</h4>
                               <span className="text-xs text-gray-500 italic">
@@ -178,7 +178,7 @@ const Modern = ({ data }) => {
                       </h3>
                       <div className="space-y-3">
                         {education.map((edu, index) => (
-                          <div key={index} className="break-inside-avoid">
+                          <div key={index}>
                             <div className="flex justify-between items-baseline">
                               <h4 className="font-bold text-gray-900">{edu.school}</h4>
                               <span className="text-xs text-gray-500 italic">
@@ -244,6 +244,11 @@ const Modern = ({ data }) => {
               </td>
             </tr>
           </tbody>
+          
+          {/* RODAPÉ FANTASMA ESQUERDA */}
+          <tfoot className="h-[20mm] print:h-[20mm]">
+            <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+          </tfoot>
         </table>
       </div>
 
@@ -366,6 +371,11 @@ const Modern = ({ data }) => {
               </td>
             </tr>
           </tbody>
+          
+          {/* RODAPÉ FANTASMA DIREITA */}
+          <tfoot className="h-[20mm] print:h-[20mm]">
+            <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+          </tfoot>
         </table>
       </div>
     </div>
