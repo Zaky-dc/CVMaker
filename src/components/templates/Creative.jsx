@@ -21,7 +21,6 @@ const Creative = ({ data }) => {
     "--theme-color": themeColor,
   };
 
-  // Helper func to get proficiency percentage
   const getProficiencyLevel = (proficiency) => {
     const levels = {
       native: 100,
@@ -54,7 +53,7 @@ const Creative = ({ data }) => {
       style={containerStyle}
       id="cv-template"
     >
-      {/* Sidebar Background (Screen & Print) - Absolute Positioned for Full Height */}
+      {/* Sidebar Background */}
       <div
         className="absolute top-0 left-0 bottom-0 w-1/3 z-0 print:fixed print:top-0 print:left-0 print:h-screen print:w-1/3"
         style={{
@@ -64,7 +63,7 @@ const Creative = ({ data }) => {
         }}
       ></div>
 
-      {/* Left Sidebar - Agora usa Tabela para gerir margens de impressão */}
+      {/* Left Sidebar */}
       <aside className="w-1/3 text-white relative z-10 print:absolute print:left-0 print:top-0 print:h-full print:w-1/3">
         <table className="w-full print:-mt-[15mm]">
           <thead className="h-0 print:h-[15mm]">
@@ -76,7 +75,7 @@ const Creative = ({ data }) => {
             <tr>
               <td className="p-6 pt-6 align-top">
                 <div className="relative z-10">
-                  {/* Photo with clean styling */}
+                  {/* Photo */}
                   <div className="mb-4 flex justify-center">
                     {personal.photoUrl ? (
                       <div className="relative p-1 bg-white/5 rounded-xl">
@@ -94,7 +93,7 @@ const Creative = ({ data }) => {
                     )}
                   </div>
 
-                  {/* Contact Section */}
+                  {/* Contact */}
                   <div className="space-y-3 mb-5">
                     <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
                       {t.resumeContact || "Contact"}
@@ -131,7 +130,7 @@ const Creative = ({ data }) => {
                     )}
                   </div>
 
-                  {/* Personal Info Section */}
+                  {/* Personal Info */}
                   {(personal.birthDate ||
                     personal.civilStatus ||
                     personal.gender ||
@@ -183,7 +182,7 @@ const Creative = ({ data }) => {
                     </div>
                   )}
 
-                  {/* Skills Section */}
+                  {/* Skills */}
                   {skills && skills.length > 0 && (
                     <div className="mb-5">
                       <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
@@ -202,7 +201,7 @@ const Creative = ({ data }) => {
                     </div>
                   )}
 
-                  {/* Languages Section */}
+                  {/* Languages */}
                   {languages && languages.length > 0 && (
                     <div>
                       <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
@@ -236,6 +235,11 @@ const Creative = ({ data }) => {
               </td>
             </tr>
           </tbody>
+          
+          {/* RODAPÉ FANTASMA LATERAL */}
+          <tfoot className="h-[20mm] print:h-[20mm]">
+            <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+          </tfoot>
         </table>
       </aside>
 
@@ -251,7 +255,7 @@ const Creative = ({ data }) => {
             <tr>
               <td>
                 <div className="p-8 pt-6">
-                  {/* Header - Large Typography */}
+                  {/* Header */}
                   <header className="mb-4 relative inline-block">
                     <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-1.5 h-full rounded-full bg-[var(--theme-color)] opacity-20"></div>
                     <h1 className="text-4xl font-black text-gray-900 uppercase tracking-tighter leading-[0.85] mb-2">
@@ -266,7 +270,7 @@ const Creative = ({ data }) => {
                     </p>
                   </header>
 
-                  {/* Summary Section */}
+                  {/* Summary */}
                   {personal.summary && (
                     <section className="mb-5 break-inside-avoid">
                       <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-2 uppercase tracking-[0.2em] break-after-avoid">
@@ -282,7 +286,7 @@ const Creative = ({ data }) => {
                     </section>
                   )}
 
-                  {/* Work Experience Section */}
+                  {/* Experience */}
                   {experience && experience.length > 0 && (
                     <section className="mb-5">
                       <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-3 uppercase tracking-[0.2em] break-after-avoid">
@@ -295,7 +299,6 @@ const Creative = ({ data }) => {
                             key={exp.id}
                             className="relative pl-8 ml-2 border-l border-slate-200 last:border-l-0 group"
                           >
-                            {/* Dynamic Timeline Marker */}
                             <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-white bg-[var(--theme-color)] shadow-sm group-hover:scale-125 transition-all duration-300"></div>
 
                             <div className="space-y-1">
@@ -321,7 +324,7 @@ const Creative = ({ data }) => {
                     </section>
                   )}
 
-                  {/* Internships Section */}
+                  {/* Internships */}
                   {internships && internships.length > 0 && (
                     <section className="mb-6">
                       <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
@@ -358,7 +361,7 @@ const Creative = ({ data }) => {
                     </section>
                   )}
 
-                  {/* Education Section */}
+                  {/* Education */}
                   {education && education.length > 0 && (
                     <section className="mb-6">
                       <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
@@ -396,7 +399,7 @@ const Creative = ({ data }) => {
                     </section>
                   )}
 
-                  {/* Certificates Grid */}
+                  {/* Certificates */}
                   {certificates && certificates.length > 0 && (
                     <section className="mb-6">
                       <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
@@ -431,7 +434,7 @@ const Creative = ({ data }) => {
                     </section>
                   )}
 
-                  {/* References Grid */}
+                  {/* References */}
                   {references && references.length > 0 && (
                     <section className="mb-6">
                       <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
@@ -475,7 +478,7 @@ const Creative = ({ data }) => {
                     </section>
                   )}
 
-                  {/* Signature Section */}
+                  {/* Signature */}
                   {personal.signatureUrl && (
                     <section className="mt-8 pt-8 border-t border-slate-100 flex flex-col items-center">
                       <img
@@ -493,6 +496,11 @@ const Creative = ({ data }) => {
               </td>
             </tr>
           </tbody>
+          
+          {/* RODAPÉ FANTASMA CENTRAL */}
+          <tfoot className="h-[20mm] print:h-[20mm]">
+            <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+          </tfoot>
         </table>
       </main>
     </div>
