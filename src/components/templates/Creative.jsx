@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Mail, Phone, Globe, MapPin, ExternalLink } from "lucide-react";
+import { Mail, Phone, Globe } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
 
 const Creative = ({ data }) => {
@@ -17,13 +17,8 @@ const Creative = ({ data }) => {
   const themeColor = metadata.themeColor || "#8B5CF6";
   const { t } = useLanguage();
 
-  const sidebarWidth = "33.333333%";
   const containerStyle = {
     "--theme-color": themeColor,
-  };
-
-  const sidebarStyle = {
-    backgroundColor: themeColor,
   };
 
   // Helper func to get proficiency percentage
@@ -69,168 +64,182 @@ const Creative = ({ data }) => {
         }}
       ></div>
 
-      {/* Left Sidebar - Transparent, content sits on top of absolute bg */}
-      <aside className="w-1/3 text-white p-6 flex flex-col relative z-10 print:bg-transparent print:absolute print:left-0 print:top-0 print:h-full">
-        <div className="relative z-10">
-          {/* Photo with clean styling */}
-          <div className="mb-4 flex justify-center">
-            {personal.photoUrl ? (
-              <div className="relative p-1 bg-white/5 rounded-xl">
-                <img
-                  src={personal.photoUrl}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-xl object-cover"
-                />
-              </div>
-            ) : (
-              <div className="w-32 h-32 rounded-2xl bg-white/20 flex items-center justify-center text-4xl font-bold backdrop-blur-md shadow-xl border border-white/30">
-                {personal.firstName?.[0]}
-                {personal.lastName?.[0]}
-              </div>
-            )}
-          </div>
-
-          {/* Contact Section */}
-          <div className="space-y-3 mb-5">
-            <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-              {t.resumeContact || "Contact"}
-            </h3>
-            {personal.email && (
-              <div className="flex items-center gap-4 group">
-                <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-                  <Mail size={14} className="text-white/90" />
-                </div>
-                <span className="text-[11px] font-medium leading-tight break-all opacity-90">
-                  {personal.email}
-                </span>
-              </div>
-            )}
-            {personal.phone && (
-              <div className="flex items-center gap-4 group">
-                <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-                  <Phone size={14} className="text-white/90" />
-                </div>
-                <span className="text-[11px] font-medium opacity-90">
-                  {personal.phone}
-                </span>
-              </div>
-            )}
-            {personal.website && (
-              <div className="flex items-center gap-4 group">
-                <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-                  <Globe size={14} className="text-white/90" />
-                </div>
-                <span className="text-[11px] font-medium leading-tight break-all opacity-90">
-                  {personal.website}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Personal Info Section */}
-          {(personal.birthDate ||
-            personal.civilStatus ||
-            personal.gender ||
-            personal.nationality) && (
-            <div className="space-y-2 mb-8">
-              <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-                {t.personalDetails}
-              </h3>
-              {personal.birthDate && (
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                    {t.birthDate}
-                  </span>
-                  <span className="text-[11px] font-medium opacity-90">
-                    {personal.birthDate}
-                  </span>
-                </div>
-              )}
-              {personal.civilStatus && (
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                    {t.civilStatus}
-                  </span>
-                  <span className="text-[11px] font-medium opacity-90">
-                    {personal.civilStatus}
-                  </span>
-                </div>
-              )}
-              {personal.gender && (
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                    {t.gender}
-                  </span>
-                  <span className="text-[11px] font-medium opacity-90">
-                    {personal.gender}
-                  </span>
-                </div>
-              )}
-              {personal.nationality && (
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                    {t.nationality}
-                  </span>
-                  <span className="text-[11px] font-medium opacity-90">
-                    {personal.nationality}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Skills Section */}
-          {skills && skills.length > 0 && (
-            <div className="mb-5">
-              <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-                {t.resumeSkills}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-white/15 hover:bg-white/25 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide backdrop-blur-sm transition-all duration-300 cursor-default"
-                  >
-                    {typeof skill === "string" ? skill : skill.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Languages Section */}
-          {languages && languages.length > 0 && (
-            <div>
-              <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-                {t.resumeLanguages}
-              </h3>
-              <div className="space-y-4">
-                {languages.map((lang, index) => (
-                  <div key={index} className="space-y-1.5">
-                    <div className="flex justify-between items-center px-0.5">
-                      <span className="text-[11px] font-bold tracking-wide">
-                        {lang.language}
-                      </span>
-                      <span className="text-[9px] uppercase font-black opacity-60 tracking-tighter">
-                        {t[lang.proficiency] || lang.proficiency}
-                      </span>
-                    </div>
-                    <div className="w-full bg-black/10 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="bg-white rounded-full h-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000"
-                        style={{
-                          width: `${getProficiencyLevel(lang.proficiency)}%`,
-                        }}
-                      ></div>
-                    </div>
+      {/* Left Sidebar - Agora usa Tabela para gerir margens de impressão */}
+      <aside className="w-1/3 text-white relative z-10 print:absolute print:left-0 print:top-0 print:h-full print:w-1/3">
+        <table className="w-full print:-mt-[15mm]">
+          <thead className="h-0 print:h-[15mm]">
+            <tr>
+              <td className="h-0 print:h-[15mm]"></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="p-6 pt-6 align-top">
+                <div className="relative z-10">
+                  {/* Photo with clean styling */}
+                  <div className="mb-4 flex justify-center">
+                    {personal.photoUrl ? (
+                      <div className="relative p-1 bg-white/5 rounded-xl">
+                        <img
+                          src={personal.photoUrl}
+                          alt="Profile"
+                          className="w-32 h-32 rounded-xl object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-32 h-32 rounded-2xl bg-white/20 flex items-center justify-center text-4xl font-bold backdrop-blur-md shadow-xl border border-white/30">
+                        {personal.firstName?.[0]}
+                        {personal.lastName?.[0]}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+
+                  {/* Contact Section */}
+                  <div className="space-y-3 mb-5">
+                    <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                      {t.resumeContact || "Contact"}
+                    </h3>
+                    {personal.email && (
+                      <div className="flex items-center gap-4 group">
+                        <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
+                          <Mail size={14} className="text-white/90" />
+                        </div>
+                        <span className="text-[11px] font-medium leading-tight break-all opacity-90">
+                          {personal.email}
+                        </span>
+                      </div>
+                    )}
+                    {personal.phone && (
+                      <div className="flex items-center gap-4 group">
+                        <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
+                          <Phone size={14} className="text-white/90" />
+                        </div>
+                        <span className="text-[11px] font-medium opacity-90">
+                          {personal.phone}
+                        </span>
+                      </div>
+                    )}
+                    {personal.website && (
+                      <div className="flex items-center gap-4 group">
+                        <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
+                          <Globe size={14} className="text-white/90" />
+                        </div>
+                        <span className="text-[11px] font-medium leading-tight break-all opacity-90">
+                          {personal.website}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Personal Info Section */}
+                  {(personal.birthDate ||
+                    personal.civilStatus ||
+                    personal.gender ||
+                    personal.nationality) && (
+                    <div className="space-y-2 mb-8">
+                      <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                        {t.personalDetails}
+                      </h3>
+                      {personal.birthDate && (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                            {t.birthDate}
+                          </span>
+                          <span className="text-[11px] font-medium opacity-90">
+                            {personal.birthDate}
+                          </span>
+                        </div>
+                      )}
+                      {personal.civilStatus && (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                            {t.civilStatus}
+                          </span>
+                          <span className="text-[11px] font-medium opacity-90">
+                            {personal.civilStatus}
+                          </span>
+                        </div>
+                      )}
+                      {personal.gender && (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                            {t.gender}
+                          </span>
+                          <span className="text-[11px] font-medium opacity-90">
+                            {personal.gender}
+                          </span>
+                        </div>
+                      )}
+                      {personal.nationality && (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                            {t.nationality}
+                          </span>
+                          <span className="text-[11px] font-medium opacity-90">
+                            {personal.nationality}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Skills Section */}
+                  {skills && skills.length > 0 && (
+                    <div className="mb-5">
+                      <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                        {t.resumeSkills}
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {skills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="bg-white/15 hover:bg-white/25 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide backdrop-blur-sm transition-all duration-300 cursor-default"
+                          >
+                            {typeof skill === "string" ? skill : skill.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Languages Section */}
+                  {languages && languages.length > 0 && (
+                    <div>
+                      <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                        {t.resumeLanguages}
+                      </h3>
+                      <div className="space-y-4">
+                        {languages.map((lang, index) => (
+                          <div key={index} className="space-y-1.5">
+                            <div className="flex justify-between items-center px-0.5">
+                              <span className="text-[11px] font-bold tracking-wide">
+                                {lang.language}
+                              </span>
+                              <span className="text-[9px] uppercase font-black opacity-60 tracking-tighter">
+                                {t[lang.proficiency] || lang.proficiency}
+                              </span>
+                            </div>
+                            <div className="w-full bg-black/10 rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className="bg-white rounded-full h-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000"
+                                style={{
+                                  width: `${getProficiencyLevel(lang.proficiency)}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </aside>
 
+      {/* Main Content */}
       <main className="w-2/3 bg-white print:bg-transparent print:w-2/3 print:ml-[33.333333%]">
         <table className="w-full print:-mt-[25mm]">
           <thead className="h-0 print:h-[15mm]">
