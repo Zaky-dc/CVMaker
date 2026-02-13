@@ -2,7 +2,27 @@ import PropTypes from "prop-types";
 import { useLanguage } from "../../context/LanguageContext";
 
 const Classic = ({ data }) => {
-    const { personal, experience, internships, education, skills, languages, certificates, references } = data;
+    const {
+        personal,
+        experience,
+        internships,
+        education,
+        skills,
+        languages,
+        certificates,
+        references,
+        metadata,
+        sectionOrder = [
+            "personal",
+            "experience",
+            "internships",
+            "education",
+            "skills",
+            "languages",
+            "certificates",
+            "references",
+        ],
+    } = data;
     const { t } = useLanguage();
 
     const formatDescription = (text) => {
@@ -17,12 +37,180 @@ const Classic = ({ data }) => {
         });
     };
 
+    const renderSection = (sectionId) => {
+        switch (sectionId) {
+            case "experience":
+                return (
+                    experience &&
+                    experience.length > 0 && (
+                        <section>
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeExperience}
+                            </h2>
+                            <div className="space-y-6">
+                                {experience.map((exp) => (
+                                    <div key={exp.id}>
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <h3 className="font-bold text-lg">{exp.role}</h3>
+                                            <span className="italic text-sm text-gray-600">
+                                                {exp.date || `${exp.startDate} - ${exp.endDate}`}
+                                            </span>
+                                        </div>
+                                        <p className="font-medium text-gray-800 mb-2">{exp.company}</p>
+                                        <div className="max-w-2xl">
+                                            {formatDescription(exp.description)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            case "internships":
+                return (
+                    internships &&
+                    internships.length > 0 && (
+                        <section>
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeInternships}
+                            </h2>
+                            <div className="space-y-6">
+                                {internships.map((intern) => (
+                                    <div key={intern.id}>
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <h3 className="font-bold text-lg">{intern.role}</h3>
+                                            <span className="italic text-sm text-gray-600">
+                                                {intern.startDate} - {intern.endDate}
+                                            </span>
+                                        </div>
+                                        <p className="font-medium text-gray-800 mb-2">{intern.company}</p>
+                                        <div className="max-w-2xl">
+                                            {formatDescription(intern.description)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            case "education":
+                return (
+                    education &&
+                    education.length > 0 && (
+                        <section>
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeEducation}
+                            </h2>
+                            <div className="space-y-4">
+                                {education.map((edu) => (
+                                    <div key={edu.id}>
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <h3 className="font-bold text-lg">{edu.school}</h3>
+                                            <span className="italic text-sm text-gray-600">
+                                                {edu.date || `${edu.startDate} - ${edu.endDate}`}
+                                            </span>
+                                        </div>
+                                        <p className="text-gray-800">{edu.degree}</p>
+                                        {edu.description && (
+                                            <p className="text-sm text-gray-600 mt-1">{edu.description}</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            case "skills":
+                return (
+                    skills &&
+                    skills.length > 0 && (
+                        <section className="break-inside-avoid">
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeSkills}
+                            </h2>
+                            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                                {skills.map((skill, index) => (
+                                    <span key={index} className="flex items-center gap-2">
+                                        • {typeof skill === 'string' ? skill : skill.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            case "languages":
+                return (
+                    languages &&
+                    languages.length > 0 && (
+                        <section className="break-inside-avoid">
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeLanguages}
+                            </h2>
+                            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                                {languages.map((lang, index) => (
+                                    <span key={index}>
+                                        • {lang.language} ({t[lang.proficiency] || lang.proficiency})
+                                    </span>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            case "certificates":
+                return (
+                    certificates &&
+                    certificates.length > 0 && (
+                        <section>
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeCertificates}
+                            </h2>
+                            <div className="space-y-3">
+                                {certificates.map((cert, index) => (
+                                    <div key={index} className="break-inside-avoid">
+                                        <h3 className="font-bold">{cert.name}</h3>
+                                        <p className="text-sm italic text-gray-600">
+                                            {cert.issuer} • {cert.date}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            case "references":
+                return (
+                    references &&
+                    references.length > 0 && (
+                        <section>
+                            <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                {t.resumeReferences}
+                            </h2>
+                            <div className="space-y-3">
+                                {references.map((ref, index) => (
+                                    <div key={index} className="break-inside-avoid">
+                                        <h3 className="font-bold">{ref.name}</h3>
+                                        <p className="text-sm text-gray-700">
+                                            {ref.position} at {ref.company}
+                                        </p>
+                                        {ref.email && <p className="text-xs text-gray-600">{ref.email}</p>}
+                                        {ref.phone && <p className="text-xs text-gray-600">{ref.phone}</p>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="w-full h-full bg-white text-gray-900 font-serif relative" id="cv-template">
-            
+
             {/* Tabela Mestra */}
             <table className="w-full">
-                
+
                 {/* 1. CABEÇALHO FANTASMA (Margem Topo em todas as páginas) */}
                 <thead className="h-[15mm] print:h-[15mm]">
                     <tr><td className="h-[15mm] print:h-[15mm]"></td></tr>
@@ -32,7 +220,7 @@ const Classic = ({ data }) => {
                 <tbody>
                     <tr>
                         <td className="p-8 pt-0 align-top">
-                            
+
                             {/* Header do CV */}
                             <div className="text-center border-b-2 border-gray-800 pb-4 mb-6">
                                 <h1 className="text-4xl font-bold uppercase tracking-widest mb-2">
@@ -56,153 +244,24 @@ const Classic = ({ data }) => {
 
                             {/* Conteúdo do CV */}
                             <div className="space-y-6">
-                                
-                                {personal.summary && (
-                                    <section>
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.summary}
-                                        </h2>
-                                        <p className="text-md leading-relaxed text-justify">
-                                            {personal.summary}
-                                        </p>
-                                    </section>
-                                )}
-
-                                {experience && experience.length > 0 && (
-                                    <section>
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeExperience}
-                                        </h2>
-                                        <div className="space-y-6">
-                                            {experience.map((exp) => (
-                                                <div key={exp.id}>
-                                                    <div className="flex justify-between items-baseline mb-1">
-                                                        <h3 className="font-bold text-lg">{exp.role}</h3>
-                                                        <span className="italic text-sm text-gray-600">
-                                                            {exp.date || `${exp.startDate} - ${exp.endDate}`}
-                                                        </span>
-                                                    </div>
-                                                    <p className="font-medium text-gray-800 mb-2">{exp.company}</p>
-                                                    <div className="max-w-2xl">
-                                                        {formatDescription(exp.description)}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {internships && internships.length > 0 && (
-                                    <section>
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeInternships}
-                                        </h2>
-                                        <div className="space-y-6">
-                                            {internships.map((intern) => (
-                                                <div key={intern.id}>
-                                                    <div className="flex justify-between items-baseline mb-1">
-                                                        <h3 className="font-bold text-lg">{intern.role}</h3>
-                                                        <span className="italic text-sm text-gray-600">
-                                                            {intern.startDate} - {intern.endDate}
-                                                        </span>
-                                                    </div>
-                                                    <p className="font-medium text-gray-800 mb-2">{intern.company}</p>
-                                                    <div className="max-w-2xl">
-                                                        {formatDescription(intern.description)}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {education && education.length > 0 && (
-                                    <section>
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeEducation}
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {education.map((edu) => (
-                                                <div key={edu.id}>
-                                                    <div className="flex justify-between items-baseline mb-1">
-                                                        <h3 className="font-bold text-lg">{edu.school}</h3>
-                                                        <span className="italic text-sm text-gray-600">
-                                                            {edu.date || `${edu.startDate} - ${edu.endDate}`}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-gray-800">{edu.degree}</p>
-                                                    {edu.description && (
-                                                        <p className="text-sm text-gray-600 mt-1">{edu.description}</p>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {skills && skills.length > 0 && (
-                                    <section className="break-inside-avoid">
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeSkills}
-                                        </h2>
-                                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                                            {skills.map((skill, index) => (
-                                                <span key={index} className="flex items-center gap-2">
-                                                    • {typeof skill === 'string' ? skill : skill.name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {languages && languages.length > 0 && (
-                                    <section className="break-inside-avoid">
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeLanguages}
-                                        </h2>
-                                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                                            {languages.map((lang, index) => (
-                                                <span key={index}>
-                                                    • {lang.language} ({t[lang.proficiency] || lang.proficiency})
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {certificates && certificates.length > 0 && (
-                                    <section>
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeCertificates}
-                                        </h2>
-                                        <div className="space-y-3">
-                                            {certificates.map((cert, index) => (
-                                                <div key={index} className="break-inside-avoid">
-                                                    <h3 className="font-bold">{cert.name}</h3>
-                                                    <p className="text-sm italic text-gray-600">{cert.issuer} • {cert.date}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {references && references.length > 0 && (
-                                    <section>
-                                        <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
-                                            {t.resumeReferences}
-                                        </h2>
-                                        <div className="space-y-3">
-                                            {references.map((ref, index) => (
-                                                <div key={index} className="break-inside-avoid">
-                                                    <h3 className="font-bold">{ref.name}</h3>
-                                                    <p className="text-sm text-gray-700">{ref.position} at {ref.company}</p>
-                                                    {ref.email && <p className="text-xs text-gray-600">{ref.email}</p>}
-                                                    {ref.phone && <p className="text-xs text-gray-600">{ref.phone}</p>}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
+                                {/* Sections (Dynamic) */}
+                                {sectionOrder.map((id) => {
+                                    if (id === "personal") {
+                                        return (
+                                            personal.summary && (
+                                                <section key={id}>
+                                                    <h2 className="text-xl font-bold uppercase border-b border-gray-300 mb-3 pb-1">
+                                                        {t.summary}
+                                                    </h2>
+                                                    <p className="text-md leading-relaxed text-justify">
+                                                        {personal.summary}
+                                                    </p>
+                                                </section>
+                                            )
+                                        );
+                                    }
+                                    return <div key={id}>{renderSection(id)}</div>;
+                                })}
 
                                 {personal.signatureUrl && (
                                     <section className="pt-8 flex flex-col items-center avoid-break">
@@ -220,7 +279,7 @@ const Classic = ({ data }) => {
                 <tfoot className="h-[20mm] print:h-[20mm]">
                     <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
                 </tfoot>
-                
+
             </table>
         </div>
     );

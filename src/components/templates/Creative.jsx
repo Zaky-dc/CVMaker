@@ -13,6 +13,16 @@ const Creative = ({ data }) => {
     certificates,
     references,
     metadata,
+    sectionOrder = [
+      "personal",
+      "experience",
+      "internships",
+      "education",
+      "skills",
+      "languages",
+      "certificates",
+      "references",
+    ],
   } = data;
   const themeColor = metadata.themeColor || "#8B5CF6";
   const { t } = useLanguage();
@@ -45,6 +55,324 @@ const Creative = ({ data }) => {
         </div>
       );
     });
+  };
+
+  const renderSidebarSection = (sectionId) => {
+    switch (sectionId) {
+      case "personal":
+        return (
+          (personal.birthDate ||
+            personal.civilStatus ||
+            personal.gender ||
+            personal.nationality) && (
+            <div className="space-y-2 mb-8">
+              <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                {t.personalDetails}
+              </h3>
+              {personal.birthDate && (
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                    {t.birthDate}
+                  </span>
+                  <span className="text-[11px] font-medium opacity-90">
+                    {personal.birthDate}
+                  </span>
+                </div>
+              )}
+              {personal.civilStatus && (
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                    {t.civilStatus}
+                  </span>
+                  <span className="text-[11px] font-medium opacity-90">
+                    {personal.civilStatus}
+                  </span>
+                </div>
+              )}
+              {personal.gender && (
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                    {t.gender}
+                  </span>
+                  <span className="text-[11px] font-medium opacity-90">
+                    {personal.gender}
+                  </span>
+                </div>
+              )}
+              {personal.nationality && (
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
+                    {t.nationality}
+                  </span>
+                  <span className="text-[11px] font-medium opacity-90">
+                    {personal.nationality}
+                  </span>
+                </div>
+              )}
+            </div>
+          )
+        );
+      case "skills":
+        return (
+          skills &&
+          skills.length > 0 && (
+            <div className="mb-5">
+              <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                {t.resumeSkills}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="bg-white/15 hover:bg-white/25 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide backdrop-blur-sm transition-all duration-300 cursor-default"
+                  >
+                    {typeof skill === "string" ? skill : skill.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )
+        );
+      case "languages":
+        return (
+          languages &&
+          languages.length > 0 && (
+            <div>
+              <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
+                {t.resumeLanguages}
+              </h3>
+              <div className="space-y-4">
+                {languages.map((lang, index) => (
+                  <div key={index} className="space-y-1.5">
+                    <div className="flex justify-between items-center px-0.5">
+                      <span className="text-[11px] font-bold tracking-wide">
+                        {lang.language}
+                      </span>
+                      <span className="text-[9px] uppercase font-black opacity-60 tracking-tighter">
+                        {t[lang.proficiency] || lang.proficiency}
+                      </span>
+                    </div>
+                    <div className="w-full bg-black/10 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="bg-white rounded-full h-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000"
+                        style={{
+                          width: `${getProficiencyLevel(lang.proficiency)}%`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderMainSection = (sectionId) => {
+    switch (sectionId) {
+      case "experience":
+        return (
+          experience &&
+          experience.length > 0 && (
+            <section className="mb-5">
+              <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-3 uppercase tracking-[0.2em] break-after-avoid">
+                <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
+                {t.resumeExperience}
+              </h3>
+              <div className="space-y-3">
+                {experience.map((exp) => (
+                  <div
+                    key={exp.id}
+                    className="relative pl-8 ml-2 border-l border-slate-200 last:border-l-0 group"
+                  >
+                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-white bg-[var(--theme-color)] shadow-sm group-hover:scale-125 transition-all duration-300"></div>
+
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap justify-between items-start gap-2">
+                        <h4 className="font-black text-gray-900 text-base uppercase tracking-tight leading-tight group-hover:text-[var(--theme-color)] transition-colors">
+                          {exp.role}
+                        </h4>
+                        <span className="text-[9px] font-black text-white bg-gray-900 px-2 py-1 rounded-md shadow-sm uppercase tracking-widest flex-shrink-0">
+                          {exp.date || `${exp.startDate} - ${exp.endDate}`}
+                        </span>
+                      </div>
+                      <div className="text-[var(--theme-color)] font-black text-[10px] uppercase tracking-widest">
+                        {exp.company}
+                      </div>
+                      <div className="text-gray-500 text-[12px] leading-relaxed max-w-2xl whitespace-pre-line">
+                        {formatDescription(exp.description)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "internships":
+        return (
+          internships &&
+          internships.length > 0 && (
+            <section className="mb-6">
+              <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
+                <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
+                {t.resumeInternships}
+              </h3>
+              <div className="space-y-4">
+                {internships.map((intern) => (
+                  <div
+                    key={intern.id}
+                    className="relative pl-8 ml-2 border-l border-slate-200 last:border-l-0 group"
+                  >
+                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-white bg-[var(--theme-color)] shadow-sm group-hover:scale-125 transition-all duration-300"></div>
+
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap justify-between items-start gap-4">
+                        <h4 className="font-black text-gray-900 text-lg uppercase tracking-tight leading-none group-hover:text-[var(--theme-color)] transition-colors">
+                          {intern.role}
+                        </h4>
+                        <span className="text-[10px] font-black text-white bg-gray-900 px-3 py-1.5 rounded-md shadow-sm uppercase tracking-widest">
+                          {intern.startDate} - {intern.endDate}
+                        </span>
+                      </div>
+                      <div className="text-[var(--theme-color)] font-black text-xs uppercase tracking-widest">
+                        {intern.company}
+                      </div>
+                      <div className="text-gray-500 text-[12px] leading-relaxed max-w-2xl whitespace-pre-line">
+                        {formatDescription(intern.description)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "education":
+        return (
+          education &&
+          education.length > 0 && (
+            <section className="mb-6">
+              <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
+                <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
+                {t.resumeEducation}
+              </h3>
+              <div className="grid grid-cols-1 gap-3">
+                {education.map((edu) => (
+                  <div
+                    key={edu.id}
+                    className="p-4 rounded-2xl bg-white border-2 border-slate-50 hover:border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 break-inside-avoid"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="font-black text-gray-900 text-base uppercase tracking-tight">
+                          {edu.school}
+                        </h4>
+                        <div className="text-[var(--theme-color)] font-bold text-xs uppercase tracking-widest mt-0.5">
+                          {edu.degree}
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-black text-gray-400 bg-slate-50 px-3 py-1 rounded-md uppercase tracking-widest">
+                        {edu.date || `${edu.startDate} - ${edu.endDate}`}
+                      </span>
+                    </div>
+                    {edu.description && (
+                      <p className="text-gray-500 text-[12px] leading-relaxed italic">
+                        {edu.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "certificates":
+        return (
+          certificates &&
+          certificates.length > 0 && (
+            <section className="mb-6">
+              <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
+                <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
+                {t.resumeCertificates}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                {certificates.map((cert, index) => (
+                  <div
+                    key={index}
+                    className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-lg transition-all duration-300 break-inside-avoid"
+                  >
+                    <div className="w-10 h-10 flex-shrink-0 bg-[var(--theme-color)]/10 text-[var(--theme-color)] rounded-lg flex items-center justify-center font-black text-xl">
+                      C
+                    </div>
+                    <div>
+                      <h4 className="font-black text-gray-900 text-xs uppercase tracking-tight mb-1">
+                        {cert.name}
+                      </h4>
+                      <div className="text-[10px] font-bold text-gray-500 uppercase">
+                        {cert.issuer}
+                      </div>
+                      {cert.date && (
+                        <div className="text-[9px] font-black text-[var(--theme-color)] uppercase tracking-tighter mt-1">
+                          {cert.date}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "references":
+        return (
+          references &&
+          references.length > 0 && (
+            <section className="mb-6">
+              <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
+                <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
+                {t.resumeReferences}
+              </h3>
+              <div className="grid grid-cols-2 gap-6">
+                {references.map((ref, index) => (
+                  <div key={index} className="space-y-2 group break-inside-avoid">
+                    <h4 className="font-black text-gray-900 text-sm uppercase tracking-tight group-hover:text-[var(--theme-color)] transition-colors">
+                      {ref.name}
+                    </h4>
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {ref.position}
+                      </p>
+                      <p className="text-[10px] font-black text-[var(--theme-color)] uppercase tracking-tighter">
+                        {ref.company}
+                      </p>
+                    </div>
+                    <div className="pt-2 space-y-1">
+                      {ref.email && (
+                        <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
+                          <Mail size={10} className="text-gray-300" />{" "}
+                          {ref.email}
+                        </div>
+                      )}
+                      {ref.phone && (
+                        <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
+                          <Phone size={10} className="text-gray-300" />{" "}
+                          {ref.phone}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -130,112 +458,19 @@ const Creative = ({ data }) => {
                     )}
                   </div>
 
-                  {/* Personal Info */}
-                  {(personal.birthDate ||
-                    personal.civilStatus ||
-                    personal.gender ||
-                    personal.nationality) && (
-                    <div className="space-y-2 mb-8">
-                      <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-                        {t.personalDetails}
-                      </h3>
-                      {personal.birthDate && (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                            {t.birthDate}
-                          </span>
-                          <span className="text-[11px] font-medium opacity-90">
-                            {personal.birthDate}
-                          </span>
-                        </div>
-                      )}
-                      {personal.civilStatus && (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                            {t.civilStatus}
-                          </span>
-                          <span className="text-[11px] font-medium opacity-90">
-                            {personal.civilStatus}
-                          </span>
-                        </div>
-                      )}
-                      {personal.gender && (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                            {t.gender}
-                          </span>
-                          <span className="text-[11px] font-medium opacity-90">
-                            {personal.gender}
-                          </span>
-                        </div>
-                      )}
-                      {personal.nationality && (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[9px] uppercase font-black opacity-60 tracking-wider font-sans">
-                            {t.nationality}
-                          </span>
-                          <span className="text-[11px] font-medium opacity-90">
-                            {personal.nationality}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Skills */}
-                  {skills && skills.length > 0 && (
-                    <div className="mb-5">
-                      <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-                        {t.resumeSkills}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-white/15 hover:bg-white/25 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide backdrop-blur-sm transition-all duration-300 cursor-default"
-                          >
-                            {typeof skill === "string" ? skill : skill.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Languages */}
-                  {languages && languages.length > 0 && (
-                    <div>
-                      <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
-                        {t.resumeLanguages}
-                      </h3>
-                      <div className="space-y-4">
-                        {languages.map((lang, index) => (
-                          <div key={index} className="space-y-1.5">
-                            <div className="flex justify-between items-center px-0.5">
-                              <span className="text-[11px] font-bold tracking-wide">
-                                {lang.language}
-                              </span>
-                              <span className="text-[9px] uppercase font-black opacity-60 tracking-tighter">
-                                {t[lang.proficiency] || lang.proficiency}
-                              </span>
-                            </div>
-                            <div className="w-full bg-black/10 rounded-full h-1.5 overflow-hidden">
-                              <div
-                                className="bg-white rounded-full h-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000"
-                                style={{
-                                  width: `${getProficiencyLevel(lang.proficiency)}%`,
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {/* Sidebar Sections (Dynamic) */}
+                  {sectionOrder
+                    .filter((id) =>
+                      ["personal", "skills", "languages"].includes(id),
+                    )
+                    .map((id) => (
+                      <div key={id}>{renderSidebarSection(id)}</div>
+                    ))}
                 </div>
               </td>
             </tr>
           </tbody>
-          
+
           {/* RODAPÉ FANTASMA LATERAL */}
           <tfoot className="h-[20mm] print:h-[20mm]">
             <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
@@ -270,213 +505,33 @@ const Creative = ({ data }) => {
                     </p>
                   </header>
 
-                  {/* Summary */}
-                  {personal.summary && (
-                    <section className="mb-5 break-inside-avoid">
-                      <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-2 uppercase tracking-[0.2em] break-after-avoid">
-                        <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
-                        {t.summary}
-                      </h3>
-                      <div className="relative p-3 bg-slate-50 rounded-2xl border border-slate-100 italic text-gray-600 leading-relaxed text-[13px] shadow-sm">
-                        <div className="absolute top-0 left-6 -translate-y-1/2 bg-white px-2 text-2xl font-serif text-[var(--theme-color)] opacity-20 h-4 leading-none">
-                          “
-                        </div>
-                        {personal.summary}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Experience */}
-                  {experience && experience.length > 0 && (
-                    <section className="mb-5">
-                      <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-3 uppercase tracking-[0.2em] break-after-avoid">
-                        <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
-                        {t.resumeExperience}
-                      </h3>
-                      <div className="space-y-3">
-                        {experience.map((exp) => (
-                          <div
-                            key={exp.id}
-                            className="relative pl-8 ml-2 border-l border-slate-200 last:border-l-0 group"
-                          >
-                            <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-white bg-[var(--theme-color)] shadow-sm group-hover:scale-125 transition-all duration-300"></div>
-
-                            <div className="space-y-1">
-                              <div className="flex flex-wrap justify-between items-start gap-2">
-                                <h4 className="font-black text-gray-900 text-base uppercase tracking-tight leading-tight group-hover:text-[var(--theme-color)] transition-colors">
-                                  {exp.role}
-                                </h4>
-                                <span className="text-[9px] font-black text-white bg-gray-900 px-2 py-1 rounded-md shadow-sm uppercase tracking-widest flex-shrink-0">
-                                  {exp.date ||
-                                    `${exp.startDate} - ${exp.endDate}`}
-                                </span>
-                              </div>
-                              <div className="text-[var(--theme-color)] font-black text-[10px] uppercase tracking-widest">
-                                {exp.company}
-                              </div>
-                              <div className="text-gray-500 text-[12px] leading-relaxed max-w-2xl whitespace-pre-line">
-                                {formatDescription(exp.description)}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Internships */}
-                  {internships && internships.length > 0 && (
-                    <section className="mb-6">
-                      <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
-                        <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
-                        {t.resumeInternships}
-                      </h3>
-                      <div className="space-y-4">
-                        {internships.map((intern) => (
-                          <div
-                            key={intern.id}
-                            className="relative pl-8 ml-2 border-l border-slate-200 last:border-l-0 group"
-                          >
-                            <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-white bg-[var(--theme-color)] shadow-sm group-hover:scale-125 transition-all duration-300"></div>
-
-                            <div className="space-y-2">
-                              <div className="flex flex-wrap justify-between items-start gap-4">
-                                <h4 className="font-black text-gray-900 text-lg uppercase tracking-tight leading-none group-hover:text-[var(--theme-color)] transition-colors">
-                                  {intern.role}
-                                </h4>
-                                <span className="text-[10px] font-black text-white bg-gray-900 px-3 py-1.5 rounded-md shadow-sm uppercase tracking-widest">
-                                  {intern.startDate} - {intern.endDate}
-                                </span>
-                              </div>
-                              <div className="text-[var(--theme-color)] font-black text-xs uppercase tracking-widest">
-                                {intern.company}
-                              </div>
-                              <div className="text-gray-500 text-[12px] leading-relaxed max-w-2xl whitespace-pre-line">
-                                {formatDescription(intern.description)}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Education */}
-                  {education && education.length > 0 && (
-                    <section className="mb-6">
-                      <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
-                        <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
-                        {t.resumeEducation}
-                      </h3>
-                      <div className="grid grid-cols-1 gap-3">
-                        {education.map((edu) => (
-                          <div
-                            key={edu.id}
-                            className="p-4 rounded-2xl bg-white border-2 border-slate-50 hover:border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 break-inside-avoid"
-                          >
-                            <div className="flex justify-between items-start mb-4">
-                              <div>
-                                <h4 className="font-black text-gray-900 text-base uppercase tracking-tight">
-                                  {edu.school}
-                                </h4>
-                                <div className="text-[var(--theme-color)] font-bold text-xs uppercase tracking-widest mt-0.5">
-                                  {edu.degree}
+                  {/* Main Sections (Dynamic) */}
+                  {sectionOrder
+                    .filter(
+                      (id) =>
+                        ![/*"personal",*/ "skills", "languages"].includes(id),
+                    )
+                    .map((id) => {
+                      if (id === "personal") {
+                        return (
+                          personal.summary && (
+                            <section key={id} className="mb-5 break-inside-avoid">
+                              <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-2 uppercase tracking-[0.2em] break-after-avoid">
+                                <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
+                                {t.summary}
+                              </h3>
+                              <div className="relative p-3 bg-slate-50 rounded-2xl border border-slate-100 italic text-gray-600 leading-relaxed text-[13px] shadow-sm">
+                                <div className="absolute top-0 left-6 -translate-y-1/2 bg-white px-2 text-2xl font-serif text-[var(--theme-color)] opacity-20 h-4 leading-none">
+                                  “
                                 </div>
+                                {personal.summary}
                               </div>
-                              <span className="text-[10px] font-black text-gray-400 bg-slate-50 px-3 py-1 rounded-md uppercase tracking-widest">
-                                {edu.date ||
-                                  `${edu.startDate} - ${edu.endDate}`}
-                              </span>
-                            </div>
-                            {edu.description && (
-                              <p className="text-gray-500 text-[12px] leading-relaxed italic">
-                                {edu.description}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Certificates */}
-                  {certificates && certificates.length > 0 && (
-                    <section className="mb-6">
-                      <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
-                        <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
-                        {t.resumeCertificates}
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        {certificates.map((cert, index) => (
-                          <div
-                            key={index}
-                            className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-lg transition-all duration-300 break-inside-avoid"
-                          >
-                            <div className="w-10 h-10 flex-shrink-0 bg-[var(--theme-color)]/10 text-[var(--theme-color)] rounded-lg flex items-center justify-center font-black text-xl">
-                              C
-                            </div>
-                            <div>
-                              <h4 className="font-black text-gray-900 text-xs uppercase tracking-tight mb-1">
-                                {cert.name}
-                              </h4>
-                              <div className="text-[10px] font-bold text-gray-500 uppercase">
-                                {cert.issuer}
-                              </div>
-                              {cert.date && (
-                                <div className="text-[9px] font-black text-[var(--theme-color)] uppercase tracking-tighter mt-1">
-                                  {cert.date}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* References */}
-                  {references && references.length > 0 && (
-                    <section className="mb-6">
-                      <h3 className="flex items-center gap-4 text-xs font-black text-gray-900 mb-4 uppercase tracking-[0.2em] break-after-avoid">
-                        <span className="w-10 h-1 bg-[var(--theme-color)] rounded-full"></span>
-                        {t.resumeReferences}
-                      </h3>
-                      <div className="grid grid-cols-2 gap-6">
-                        {references.map((ref, index) => (
-                          <div
-                            key={index}
-                            className="space-y-2 group break-inside-avoid"
-                          >
-                            <h4 className="font-black text-gray-900 text-sm uppercase tracking-tight group-hover:text-[var(--theme-color)] transition-colors">
-                              {ref.name}
-                            </h4>
-                            <div className="space-y-0.5">
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                {ref.position}
-                              </p>
-                              <p className="text-[10px] font-black text-[var(--theme-color)] uppercase tracking-tighter">
-                                {ref.company}
-                              </p>
-                            </div>
-                            <div className="pt-2 space-y-1">
-                              {ref.email && (
-                                <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
-                                  <Mail size={10} className="text-gray-300" />{" "}
-                                  {ref.email}
-                                </div>
-                              )}
-                              {ref.phone && (
-                                <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
-                                  <Phone size={10} className="text-gray-300" />{" "}
-                                  {ref.phone}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
+                            </section>
+                          )
+                        );
+                      }
+                      return <div key={id}>{renderMainSection(id)}</div>;
+                    })}
 
                   {/* Signature */}
                   {personal.signatureUrl && (
@@ -496,7 +551,7 @@ const Creative = ({ data }) => {
               </td>
             </tr>
           </tbody>
-          
+
           {/* RODAPÉ FANTASMA CENTRAL */}
           <tfoot className="h-[20mm] print:h-[20mm]">
             <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>

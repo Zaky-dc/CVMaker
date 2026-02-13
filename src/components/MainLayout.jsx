@@ -10,13 +10,15 @@ import {
   User as UserIcon,
   Globe,
   Save,
+  ArrowLeft,
+  FileText,
 } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useResume } from "../context/ResumeContext";
 
-const MainLayout = () => {
+const MainLayout = ({ onBack }) => {
   const { user, loginWithGoogle, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { resetResume, saveResume, hasUnsavedChanges } = useResume();
@@ -43,7 +45,18 @@ const MainLayout = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(450); // initial width in px
   const [isResizing, setIsResizing] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sidebar_onboarding_dismissed") !== "true";
+    }
+    return false;
+  });
   const sidebarRef = useRef(null);
+
+  const dismissOnboarding = () => {
+    setShowOnboarding(false);
+    localStorage.setItem("sidebar_onboarding_dismissed", "true");
+  };
 
   const startResizing = (e) => {
     setIsResizing(true);
@@ -121,9 +134,22 @@ const MainLayout = () => {
         className="h-1/2 md:h-full flex flex-col border-r border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark shadow-material-1 z-10 overflow-hidden"
       >
         <header className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-primary text-white shadow-md">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-medium tracking-wide">{t.appTitle}</h1>
-          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onBack}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center gap-2 group"
+              title={t.back}
+            >
+              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            </button>
+            <div className="flex items-center gap-2 ml-1">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shadow-inner">
+                <FileText className="text-white w-5 h-5" />
+              </div>
+              <h1 className="text-lg font-bold tracking-tight">
+                cv<span className="opacity-80 font-medium">Maker</span>
+              </h1>
+            </div>          </div>
 
           <div className="flex items-center gap-2">
             {/* Language Switcher */}
@@ -174,11 +200,10 @@ const MainLayout = () => {
 
             <button
               onClick={handleSave}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-medium transition-all mr-2 ${
-                hasUnsavedChanges
-                  ? "bg-yellow-500 text-white hover:bg-yellow-600 animate-pulse"
-                  : "bg-green-500 text-white hover:bg-green-600"
-              }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-medium transition-all mr-2 ${hasUnsavedChanges
+                ? "bg-yellow-500 text-white hover:bg-yellow-600 animate-pulse"
+                : "bg-green-500 text-white hover:bg-green-600"
+                }`}
               title={hasUnsavedChanges ? t.unsavedChanges : t.saved}
             >
               <Save size={16} />
@@ -214,9 +239,25 @@ const MainLayout = () => {
       {/* Resize Handle */}
       <div
         onMouseDown={startResizing}
-        className={`hidden md:flex w-1.5 h-full cursor-col-resize hover:bg-primary/30 transition-colors z-20 items-center justify-center group ${isResizing ? "bg-primary/40" : "bg-transparent"}`}
+        className={`hidden md:flex w-1.5 h-full cursor-col-resize hover:bg-primary/30 transition-colors z-20 items-center justify-center group relative ${isResizing ? "bg-primary/40" : "bg-transparent"}`}
       >
-        <div className="w-0.5 h-8 bg-gray-300 dark:bg-gray-600 rounded-full group-hover:bg-primary/50 transition-colors"></div>
+        <div className={`w-0.5 h-8 bg-gray-300 dark:bg-gray-600 rounded-full group-hover:bg-primary/50 transition-colors ${showOnboarding ? "animate-pulse bg-primary h-12 w-1" : ""}`}></div>
+
+        {/* Onboarding Tooltip */}
+        {showOnboarding && (
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 w-64 bg-primary text-white p-4 rounded-2xl shadow-2xl z-50 animate-in fade-in zoom-in duration-300">
+            <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rotate-45"></div>
+            <p className="text-sm font-medium mb-3 leading-relaxed">
+              {t.onboardingSidebar}
+            </p>
+            <button
+              onClick={dismissOnboarding}
+              className="w-full bg-white text-primary py-2 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors shadow-lg"
+            >
+              {t.onboardingOk}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Preview Side (Right) */}

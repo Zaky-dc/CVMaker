@@ -43,17 +43,40 @@ const initialResumeState = {
   certificates: [],
   references: [],
   internships: [],
+  sectionOrder: [
+    "personal",
+    "experience",
+    "internships",
+    "education",
+    "skills",
+    "languages",
+    "certificates",
+    "references",
+  ],
 };
 
 export const ResumeProvider = ({ children }) => {
   const { user } = useAuth();
   const [resumeData, setResumeData] = useState(() => {
-    // Initialize from local storage if strict mode isn't an issue, but
-    // depending on flow, we might want to wait for Auth.
-    // For now, let's just initialize safe default or local storage.
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("resumeData");
-      return saved ? JSON.parse(saved) : initialResumeState;
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return {
+            ...initialResumeState,
+            ...parsed,
+            // Ensure nested objects are also merged if needed, 
+            // but for sectionOrder (top-level) this is enough.
+            sectionOrder: parsed.sectionOrder || initialResumeState.sectionOrder,
+            metadata: { ...initialResumeState.metadata, ...(parsed.metadata || {}) },
+            personal: { ...initialResumeState.personal, ...(parsed.personal || {}) }
+          };
+        } catch (e) {
+          console.error("Error parsing saved resume data:", e);
+          return initialResumeState;
+        }
+      }
     }
     return initialResumeState;
   });
@@ -78,6 +101,7 @@ export const ResumeProvider = ({ children }) => {
             certificates: data.certificates || initialResumeState.certificates,
             references: data.references || initialResumeState.references,
             internships: data.internships || initialResumeState.internships,
+            sectionOrder: data.sectionOrder || initialResumeState.sectionOrder,
             metadata: {
               ...initialResumeState.metadata,
               ...(data.metadata || {}),
@@ -384,6 +408,13 @@ export const ResumeProvider = ({ children }) => {
     }));
   };
 
+  const updateSectionOrder = (newOrder) => {
+    setResumeData((prev) => ({
+      ...prev,
+      sectionOrder: newOrder,
+    }));
+  };
+
   const resetResume = () => {
     setResumeData(initialResumeState);
     localStorage.removeItem("resumeData");
@@ -421,6 +452,7 @@ export const ResumeProvider = ({ children }) => {
     addInternship,
     updateInternship,
     removeInternship,
+    updateSectionOrder,
     setPendingPhoto,
     setPendingSignature,
   };

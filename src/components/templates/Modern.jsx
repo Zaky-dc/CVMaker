@@ -13,6 +13,16 @@ const Modern = ({ data }) => {
     certificates,
     references,
     metadata,
+    sectionOrder = [
+      "personal",
+      "experience",
+      "internships",
+      "education",
+      "skills",
+      "languages",
+      "certificates",
+      "references",
+    ],
   } = data;
   const themeColor = metadata.themeColor || "#3B82F6";
   const { t } = useLanguage();
@@ -34,6 +44,249 @@ const Modern = ({ data }) => {
         </div>
       );
     });
+  };
+
+  const renderSidebarSection = (sectionId) => {
+    switch (sectionId) {
+      case "personal":
+        return (
+          (personal.birthDate ||
+            personal.civilStatus ||
+            personal.gender ||
+            personal.nationality) && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
+                {t.personalDetails}
+              </h3>
+              <div className="space-y-2 text-sm text-gray-700">
+                {personal.birthDate && (
+                  <div>
+                    <span className="font-bold text-gray-500 text-xs block uppercase">
+                      {t.birthDate}
+                    </span>
+                    {personal.birthDate}
+                  </div>
+                )}
+                {personal.civilStatus && (
+                  <div>
+                    <span className="font-bold text-gray-500 text-xs block uppercase">
+                      {t.civilStatus}
+                    </span>
+                    {personal.civilStatus}
+                  </div>
+                )}
+                {personal.gender && (
+                  <div>
+                    <span className="font-bold text-gray-500 text-xs block uppercase">
+                      {t.gender}
+                    </span>
+                    {personal.gender}
+                  </div>
+                )}
+                {personal.nationality && (
+                  <div>
+                    <span className="font-bold text-gray-500 text-xs block uppercase">
+                      {t.nationality}
+                    </span>
+                    {personal.nationality}
+                  </div>
+                )}
+              </div>
+            </section>
+          )
+        );
+      case "skills":
+        return (
+          skills &&
+          skills.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
+                {t.resumeSkills}
+              </h3>
+              <ul className="space-y-2">
+                {skills.map((skill, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center gap-2 text-sm text-gray-700"
+                  >
+                    <span className="w-1.5 h-1.5 bg-[var(--theme-color)] rounded-full"></span>
+                    {typeof skill === "string" ? skill : skill.name}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        );
+      case "languages":
+        return (
+          languages &&
+          languages.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
+                {t.resumeLanguages}
+              </h3>
+              <ul className="space-y-2">
+                {languages.map((lang, index) => (
+                  <li key={index} className="text-sm text-gray-700">
+                    <span className="font-medium">{lang.language}</span>
+                    <span className="text-gray-500">
+                      {" "}
+                      - {t[lang.proficiency] || lang.proficiency}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        );
+      case "certificates":
+        return (
+          certificates &&
+          certificates.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
+                {t.resumeCertificates}
+              </h3>
+              <div className="space-y-3">
+                {certificates.map((cert, index) => (
+                  <div key={index} className="text-sm">
+                    <div className="font-medium text-gray-800">{cert.name}</div>
+                    <div className="text-gray-600 text-xs">{cert.issuer}</div>
+                    {cert.date && (
+                      <div className="text-gray-500 text-xs">{cert.date}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderMainSection = (sectionId) => {
+    switch (sectionId) {
+      case "experience":
+        return (
+          experience &&
+          experience.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
+                {t.resumeExperience}
+              </h3>
+              <div className="space-y-4">
+                {experience.map((exp) => (
+                  <div key={exp.id}>
+                    <div className="flex justify-between items-baseline">
+                      <h4 className="font-bold text-gray-900">{exp.role}</h4>
+                      <span className="text-xs text-gray-500 italic">
+                        {exp.date || `${exp.startDate} - ${exp.endDate}`}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 font-medium text-xs mb-1">
+                      {exp.company}
+                    </p>
+                    <div className="text-gray-700 text-sm whitespace-pre-line leading-relaxed max-w-2xl">
+                      {formatDescription(exp.description)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "internships":
+        return (
+          internships &&
+          internships.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
+                {t.resumeInternships}
+              </h3>
+              <div className="space-y-4">
+                {internships.map((intern) => (
+                  <div key={intern.id}>
+                    <div className="flex justify-between items-baseline">
+                      <h4 className="font-bold text-gray-900">{intern.role}</h4>
+                      <span className="text-xs text-gray-500 italic">
+                        {intern.startDate} - {intern.endDate}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 font-medium text-xs mb-1">
+                      {intern.company}
+                    </p>
+                    <div className="text-gray-700 text-sm whitespace-pre-line leading-relaxed max-w-2xl">
+                      {formatDescription(intern.description)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "education":
+        return (
+          education &&
+          education.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
+                {t.resumeEducation}
+              </h3>
+              <div className="space-y-3">
+                {education.map((edu, index) => (
+                  <div key={index}>
+                    <div className="flex justify-between items-baseline">
+                      <h4 className="font-bold text-gray-900">{edu.school}</h4>
+                      <span className="text-xs text-gray-500 italic">
+                        {edu.date || `${edu.startDate} - ${edu.endDate}`}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 text-sm">{edu.degree}</p>
+                    {edu.description && (
+                      <p className="text-gray-600 text-xs mt-1">
+                        {edu.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      case "references":
+        return (
+          references &&
+          references.length > 0 && (
+            <section>
+              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
+                {t.resumeReferences}
+              </h3>
+              <div className="space-y-4">
+                {references.map((ref, index) => (
+                  <div key={index} className="break-inside-avoid">
+                    <div className="font-semibold text-gray-900">
+                      {ref.name}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {ref.position} {ref.company && `at ${ref.company}`}
+                    </div>
+                    {ref.email && (
+                      <div className="text-xs text-gray-500">{ref.email}</div>
+                    )}
+                    {ref.phone && (
+                      <div className="text-xs text-gray-500">{ref.phone}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -104,125 +357,28 @@ const Modern = ({ data }) => {
                 </header>
 
                 <div className="space-y-5">
-                  {/* Summary */}
-                  {personal.summary && (
-                    <section className="break-inside-avoid">
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-2 border-b border-gray-200 pb-1 break-after-avoid">
-                        {t.summary}
-                      </h3>
-                      <p className="text-gray-700 leading-relaxed text-sm">
-                        {personal.summary}
-                      </p>
-                    </section>
-                  )}
-
-                  {/* Experience */}
-                  {experience && experience.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
-                        {t.resumeExperience}
-                      </h3>
-                      <div className="space-y-4">
-                        {experience.map((exp) => (
-                          <div key={exp.id}>
-                            <div className="flex justify-between items-baseline">
-                              <h4 className="font-bold text-gray-900">{exp.role}</h4>
-                              <span className="text-xs text-gray-500 italic">
-                                {exp.date || `${exp.startDate} - ${exp.endDate}`}
-                              </span>
-                            </div>
-                            <p className="text-gray-700 font-medium text-xs mb-1">
-                              {exp.company}
-                            </p>
-                            <div className="text-gray-700 text-sm whitespace-pre-line leading-relaxed max-w-2xl">
-                              {formatDescription(exp.description)}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Internships */}
-                  {internships && internships.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
-                        {t.resumeInternships}
-                      </h3>
-                      <div className="space-y-4">
-                        {internships.map((intern) => (
-                          <div key={intern.id}>
-                            <div className="flex justify-between items-baseline">
-                              <h4 className="font-bold text-gray-900">{intern.role}</h4>
-                              <span className="text-xs text-gray-500 italic">
-                                {intern.startDate} - {intern.endDate}
-                              </span>
-                            </div>
-                            <p className="text-gray-700 font-medium text-xs mb-1">
-                              {intern.company}
-                            </p>
-                            <div className="text-gray-700 text-sm whitespace-pre-line leading-relaxed max-w-2xl">
-                              {formatDescription(intern.description)}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Education */}
-                  {education && education.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
-                        {t.resumeEducation}
-                      </h3>
-                      <div className="space-y-3">
-                        {education.map((edu, index) => (
-                          <div key={index}>
-                            <div className="flex justify-between items-baseline">
-                              <h4 className="font-bold text-gray-900">{edu.school}</h4>
-                              <span className="text-xs text-gray-500 italic">
-                                {edu.date || `${edu.startDate} - ${edu.endDate}`}
-                              </span>
-                            </div>
-                            <p className="text-gray-700 text-sm">{edu.degree}</p>
-                            {edu.description && (
-                              <p className="text-gray-600 text-xs mt-1">
-                                {edu.description}
+                  {/* Main Sections (Dynamic) */}
+                  {sectionOrder
+                    .filter(
+                      (id) => !["skills", "languages", "certificates"].includes(id),
+                    )
+                    .map((id) => {
+                      if (id === "personal") {
+                        return (
+                          personal.summary && (
+                            <section key={id} className="break-inside-avoid">
+                              <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-2 border-b border-gray-200 pb-1 break-after-avoid">
+                                {t.summary}
+                              </h3>
+                              <p className="text-gray-700 leading-relaxed text-sm">
+                                {personal.summary}
                               </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* References */}
-                  {references && references.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1 break-after-avoid">
-                        {t.resumeReferences}
-                      </h3>
-                      <div className="space-y-4">
-                        {references.map((ref, index) => (
-                          <div key={index} className="break-inside-avoid">
-                            <div className="font-semibold text-gray-900">
-                              {ref.name}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              {ref.position} {ref.company && `at ${ref.company}`}
-                            </div>
-                            {ref.email && (
-                              <div className="text-xs text-gray-500">{ref.email}</div>
-                            )}
-                            {ref.phone && (
-                              <div className="text-xs text-gray-500">{ref.phone}</div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
+                            </section>
+                          )
+                        );
+                      }
+                      return <div key={id}>{renderMainSection(id)}</div>;
+                    })}
 
                   {/* Signature */}
                   {personal.signatureUrl && (
@@ -244,7 +400,7 @@ const Modern = ({ data }) => {
               </td>
             </tr>
           </tbody>
-          
+
           {/* RODAPÉ FANTASMA ESQUERDA */}
           <tfoot className="h-[20mm] print:h-[20mm]">
             <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
@@ -262,116 +418,21 @@ const Modern = ({ data }) => {
             <tr>
               <td className="p-6 pl-4 align-top">
                 <div className="space-y-5">
-                  {/* Personal Info */}
-                  {(personal.birthDate ||
-                    personal.civilStatus ||
-                    personal.gender ||
-                    personal.nationality) && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
-                        {t.personalDetails}
-                      </h3>
-                      <div className="space-y-2 text-sm text-gray-700">
-                        {personal.birthDate && (
-                          <div>
-                            <span className="font-bold text-gray-500 text-xs block uppercase">
-                              {t.birthDate}
-                            </span>
-                            {personal.birthDate}
-                          </div>
-                        )}
-                        {personal.civilStatus && (
-                          <div>
-                            <span className="font-bold text-gray-500 text-xs block uppercase">
-                              {t.civilStatus}
-                            </span>
-                            {personal.civilStatus}
-                          </div>
-                        )}
-                        {personal.gender && (
-                          <div>
-                            <span className="font-bold text-gray-500 text-xs block uppercase">
-                              {t.gender}
-                            </span>
-                            {personal.gender}
-                          </div>
-                        )}
-                        {personal.nationality && (
-                          <div>
-                            <span className="font-bold text-gray-500 text-xs block uppercase">
-                              {t.nationality}
-                            </span>
-                            {personal.nationality}
-                          </div>
-                        )}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Skills */}
-                  {skills && skills.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
-                        {t.resumeSkills}
-                      </h3>
-                      <ul className="space-y-2">
-                        {skills.map((skill, index) => (
-                          <li
-                            key={index}
-                            className="flex items-center gap-2 text-sm text-gray-700"
-                          >
-                            <span className="w-1.5 h-1.5 bg-[var(--theme-color)] rounded-full"></span>
-                            {typeof skill === "string" ? skill : skill.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-
-                  {/* Languages */}
-                  {languages && languages.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
-                        {t.resumeLanguages}
-                      </h3>
-                      <ul className="space-y-2">
-                        {languages.map((lang, index) => (
-                          <li key={index} className="text-sm text-gray-700">
-                            <span className="font-medium">{lang.language}</span>
-                            <span className="text-gray-500">
-                              {" "}
-                              - {t[lang.proficiency] || lang.proficiency}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-
-                  {/* Certificates */}
-                  {certificates && certificates.length > 0 && (
-                    <section>
-                      <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
-                        {t.resumeCertificates}
-                      </h3>
-                      <div className="space-y-3">
-                        {certificates.map((cert, index) => (
-                          <div key={index} className="text-sm">
-                            <div className="font-medium text-gray-800">{cert.name}</div>
-                            <div className="text-gray-600 text-xs">{cert.issuer}</div>
-                            {cert.date && (
-                              <div className="text-gray-500 text-xs">{cert.date}</div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
+                  {/* Sidebar Sections (Dynamic) */}
+                  {sectionOrder
+                    .filter((id) =>
+                      ["personal", "skills", "languages", "certificates"].includes(
+                        id,
+                      ),
+                    )
+                    .map((id) => (
+                      <div key={id}>{renderSidebarSection(id)}</div>
+                    ))}
                 </div>
               </td>
             </tr>
           </tbody>
-          
+
           {/* RODAPÉ FANTASMA DIREITA */}
           <tfoot className="h-[20mm] print:h-[20mm]">
             <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
