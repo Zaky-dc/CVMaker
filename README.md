@@ -1,16 +1,16 @@
-CV Maker - O Teu Construtor de Currículos Profissional
+# CV Maker - O Teu Construtor de Currículos Profissional
 Bem-vindo ao CV Maker! Este é um construtor de currículos moderno e de alta performance, desenvolvido com React, Vite e Tailwind CSS.
 
 O objetivo? Acabar com a frustração de formatar CVs no Word. Aqui tens visualização em tempo real, otimização perfeita para impressão em múltiplas páginas e formatação automática. Foca-te no conteúdo, nós tratamos do design.
 
-##Funcionalidades Principais
+## Funcionalidades Principais
 - **Templates Dinâmicos: Escolhe entre designs Criativo, Moderno e Clássico com um clique.
 - **Layout de Impressão Perfeito: Otimizado para papel A4. As barras laterais são fixas e o suporte a múltiplas páginas é profissional (adeus textos cortados a meio!).
 - **Formatação Inteligente: O editor de descrição cria os "bullet points" automaticamente enquanto escreves.
 - **Internacionalização: Suporte completo para Português e Inglês.
 - **Integração na Nuvem: Uploads de fotos de perfil e assinaturas geridos de forma segura pelo Cloudinary.
 
-##Como Fazer Deploy na Vercel
+## Como Fazer Deploy na Vercel
 ### Este projeto está prontíssimo para ir para o ar na Vercel. Segue estes passos:
 1. **Código no GitHub
 Certifica-te de que o teu código já está no teu repositório GitHub (isto já deves ter feito!).
