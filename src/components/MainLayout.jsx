@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Preview from "./preview/Preview";
 import Editor from "./editor/Editor";
-import html2pdf from "html2pdf.js";
+// Removemos o html2pdf pois ele quebra o layout de tabelas
 import {
   Moon,
   Sun,
@@ -44,7 +44,7 @@ const MainLayout = ({ onBack }) => {
     return false;
   });
 
-  const [sidebarWidth, setSidebarWidth] = useState(450); // initial width in px
+  const [sidebarWidth, setSidebarWidth] = useState(450);
   const [isResizing, setIsResizing] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window !== "undefined") {
@@ -72,7 +72,6 @@ const MainLayout = ({ onBack }) => {
     if (isResizing) {
       const newWidth = e.clientX;
       if (newWidth > 300 && newWidth < 800) {
-        // boundaries
         setSidebarWidth(newWidth);
       }
     }
@@ -94,6 +93,7 @@ const MainLayout = ({ onBack }) => {
 
   const componentRef = useRef();
 
+  // Configuração robusta de impressão que funciona em Mobile e Desktop
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: `Resume_${new Date().toISOString().split("T")[0]}`,
@@ -105,28 +105,45 @@ const MainLayout = ({ onBack }) => {
       }
       @media print {
         html, body {
-          height: auto !important;
-          overflow: visible !important;
+          height: 100vh; /* Garante altura total */
           margin: 0 !important;
           padding: 0 !important;
+          overflow: visible !important;
           background: white !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
+        
+        /* Garante que o container do CV tenha o tamanho A4 exato, mesmo vindo de mobile */
         #printable-cv {
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
           width: 210mm !important;
-          height: auto !important;
-          transform: none !important;
+          min-height: 297mm !important;
+          margin: 0 auto !important;
+          background-color: white !important;
+          position: relative !important;
           display: block !important;
           visibility: visible !important;
           z-index: 9999 !important;
+          /* Remove escalas que possam vir da view mobile */
+          transform: scale(1) !important; 
+          transform-origin: top left !important;
         }
-        /* Aggressively hide everything else in the body when printing */
-        body > *:not(iframe) {
-          display: none !important;
+
+        /* Esconde tudo o resto agressivamente */
+        body * {
+          visibility: hidden;
+        }
+        
+        /* Mostra apenas o conteúdo do CV e seus filhos */
+        #printable-cv, #printable-cv * {
+          visibility: visible;
+        }
+        
+        /* Posiciona o CV no topo absoluto */
+        #printable-cv {
+          position: absolute;
+          left: 0;
+          top: 0;
         }
       }
     `,
@@ -142,45 +159,10 @@ const MainLayout = ({ onBack }) => {
     }
   }, [darkMode]);
 
+  // Agora o botão de download no mobile usa o mesmo motor de impressão do desktop
+  // Isso garante que o 'tfoot' (margens) funcione.
   const handleDownload = () => {
-    // Check if on mobile (screen width < 768px is a common breakpoint)
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-
-    if (isMobile) {
-      const element = document.getElementById("printable-cv");
-      if (!element) {
-        console.error("Printable CV element not found");
-        return;
-      }
-
-      const opt = {
-        margin: 0,
-        filename: `Resume_${new Date().toISOString().split("T")[0]}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          scrollX: 0,
-          scrollY: 0
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-        onclone: (clonedDocument) => {
-          clonedDocument.documentElement.classList.add('is-generating-pdf');
-          // Fix for the white line: ensure table-layout is fixed or auto and borders don't collapse weirdly
-          const tables = clonedDocument.querySelectorAll('table');
-          tables.forEach(t => {
-            t.style.borderCollapse = 'separate';
-            t.style.borderSpacing = '0';
-          });
-        },
-      };
-
-      html2pdf().set(opt).from(element).save();
-    } else {
-      handlePrint();
-    }
+    handlePrint();
   };
 
   return (
@@ -203,7 +185,10 @@ const MainLayout = ({ onBack }) => {
               className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center gap-2 group"
               title={t.back}
             >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft
+                size={20}
+                className="group-hover:-translate-x-1 transition-transform"
+              />
             </button>
             <div className="flex items-center gap-2 ml-1">
               <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shadow-inner">
@@ -212,21 +197,30 @@ const MainLayout = ({ onBack }) => {
               <h1 className="text-lg font-bold tracking-tight">
                 cv<span className="opacity-80 font-medium">Maker</span>
               </h1>
-            </div>          </div>
+            </div>{" "}
+          </div>
 
           <div className="flex items-center gap-2">
             {/* Language Switcher */}
             <div className="flex items-center bg-primary-dark/20 rounded-lg p-0.5 mr-2">
               <button
                 onClick={() => setLanguage("en")}
-                className={`px-2 py-1 text-xs rounded-md transition-colors ${language === "en" ? "bg-white text-primary font-bold" : "text-white/70 hover:text-white"}`}
+                className={`px-2 py-1 text-xs rounded-md transition-colors ${
+                  language === "en"
+                    ? "bg-white text-primary font-bold"
+                    : "text-white/70 hover:text-white"
+                }`}
               >
                 EN
               </button>
               <div className="w-[1px] h-3 bg-white/20"></div>
               <button
                 onClick={() => setLanguage("pt")}
-                className={`px-2 py-1 text-xs rounded-md transition-colors ${language === "pt" ? "bg-white text-primary font-bold" : "text-white/70 hover:text-white"}`}
+                className={`px-2 py-1 text-xs rounded-md transition-colors ${
+                  language === "pt"
+                    ? "bg-white text-primary font-bold"
+                    : "text-white/70 hover:text-white"
+                }`}
               >
                 PT
               </button>
@@ -263,10 +257,11 @@ const MainLayout = ({ onBack }) => {
 
             <button
               onClick={handleSave}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-medium transition-all mr-2 ${hasUnsavedChanges
-                ? "bg-yellow-500 text-white hover:bg-yellow-600 animate-pulse"
-                : "bg-green-500 text-white hover:bg-green-600"
-                }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-medium transition-all mr-2 ${
+                hasUnsavedChanges
+                  ? "bg-yellow-500 text-white hover:bg-yellow-600 animate-pulse"
+                  : "bg-green-500 text-white hover:bg-green-600"
+              }`}
               title={hasUnsavedChanges ? t.unsavedChanges : t.saved}
             >
               <Save size={16} />
@@ -302,9 +297,15 @@ const MainLayout = ({ onBack }) => {
       {/* Resize Handle */}
       <div
         onMouseDown={startResizing}
-        className={`hidden md:flex w-1.5 h-full cursor-col-resize hover:bg-primary/30 transition-colors z-20 items-center justify-center group relative ${isResizing ? "bg-primary/40" : "bg-transparent"}`}
+        className={`hidden md:flex w-1.5 h-full cursor-col-resize hover:bg-primary/30 transition-colors z-20 items-center justify-center group relative ${
+          isResizing ? "bg-primary/40" : "bg-transparent"
+        }`}
       >
-        <div className={`w-0.5 h-8 bg-gray-300 dark:bg-gray-600 rounded-full group-hover:bg-primary/50 transition-colors ${showOnboarding ? "animate-pulse bg-primary h-12 w-1" : ""}`}></div>
+        <div
+          className={`w-0.5 h-8 bg-gray-300 dark:bg-gray-600 rounded-full group-hover:bg-primary/50 transition-colors ${
+            showOnboarding ? "animate-pulse bg-primary h-12 w-1" : ""
+          }`}
+        ></div>
 
         {/* Onboarding Tooltip */}
         {showOnboarding && (
