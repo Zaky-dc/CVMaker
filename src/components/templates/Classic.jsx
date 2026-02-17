@@ -212,8 +212,8 @@ const Classic = ({ data }) => {
             <table className="w-full">
 
                 {/* 1. CABEÇALHO FANTASMA (Margem Topo em todas as páginas) */}
-                <thead className="h-0 [.is-generating-pdf_&]:h-[15mm]">
-                    <tr><td className="h-0 [.is-generating-pdf_&]:h-[15mm]"></td></tr>
+                <thead className="h-0 print:h-[15mm] [.is-generating-pdf_&]:h-[15mm]">
+                    <tr><td className="h-0 print:h-[15mm] [.is-generating-pdf_&]:h-[15mm]"></td></tr>
                 </thead>
 
                 {/* 2. CONTEÚDO PRINCIPAL */}
@@ -276,8 +276,8 @@ const Classic = ({ data }) => {
                 </tbody>
 
                 {/* 3. RODAPÉ FANTASMA (A Mágica para a Margem de Baixo) */}
-                <tfoot className="h-0 [.is-generating-pdf_&]:h-[20mm]">
-                    <tr><td className="h-0 [.is-generating-pdf_&]:h-[20mm]"></td></tr>
+                <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+                    <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
                 </tfoot>
 
             </table>

@@ -103,14 +103,14 @@ const Modern = ({ data }) => {
               <h3 className="text-[var(--theme-color)] font-bold uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">
                 {t.resumeSkills}
               </h3>
-              <ul className="space-y-2 flex flex-col items-center">
+              <ul className="space-y-2">
                 {skills.map((skill, index) => (
                   <li
                     key={index}
-                    className="flex items-center gap-2 text-sm text-gray-700 w-full justify-center"
+                    className="flex justify-start items-center gap-2 text-sm text-gray-700 w-full"
                   >
                     <span className="w-1.5 h-1.5 bg-[var(--theme-color)] rounded-full shrink-0"></span>
-                    <span className="text-center">
+                    <span>
                       {typeof skill === "string" ? skill : skill.name}
                     </span>
                   </li>
@@ -404,17 +404,17 @@ const Modern = ({ data }) => {
           </tbody>
 
           {/* RODAPÉ FANTASMA ESQUERDA */}
-          <tfoot className="h-0 [.is-generating-pdf_&]:h-[20mm]">
-            <tr><td className="h-0 [.is-generating-pdf_&]:h-[20mm]"></td></tr>
+          <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </tfoot>
         </table>
       </div>
 
       {/* --- RIGHT COLUMN (Sidebar) --- */}
       <div className="w-1/3 relative z-10 print:w-1/3">
-        <table className="w-full [.is-generating-pdf_&]:-mt-[20mm]">
-          <thead className="h-0 [.is-generating-pdf_&]:h-[20mm]">
-            <tr><td className="h-0 [.is-generating-pdf_&]:h-[20mm]"></td></tr>
+        <table className="w-full print:-mt-[20mm] [.is-generating-pdf_&]:-mt-[20mm]">
+          <thead className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </thead>
           <tbody>
             <tr>
@@ -436,8 +436,8 @@ const Modern = ({ data }) => {
           </tbody>
 
           {/* RODAPÉ FANTASMA DIREITA */}
-          <tfoot className="h-0 [.is-generating-pdf_&]:h-[20mm]">
-            <tr><td className="h-0 [.is-generating-pdf_&]:h-[20mm]"></td></tr>
+          <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </tfoot>
         </table>
       </div>

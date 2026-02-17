@@ -120,11 +120,11 @@ const Creative = ({ data }) => {
               <h3 className="text-white font-bold uppercase tracking-[0.25em] text-[9px] mb-3 opacity-80 border-b border-white/20 pb-1.5">
                 {t.resumeSkills}
               </h3>
-              <div className="flex flex-wrap gap-2 justify-center">
+              <div className="flex flex-wrap gap-2">
                 {skills.map((skill, index) => (
                   <span
                     key={index}
-                    className="bg-white/15 hover:bg-white/25 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide backdrop-blur-sm transition-all duration-300 cursor-default"
+                    className="bg-white/15 hover:bg-white/25 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide backdrop-blur-sm transition-all duration-300 cursor-default flex items-center justify-center text-center"
                   >
                     {typeof skill === "string" ? skill : skill.name}
                   </span>
@@ -393,10 +393,10 @@ const Creative = ({ data }) => {
 
       {/* Left Sidebar */}
       <aside className="w-1/3 text-white relative z-10 print:absolute print:left-0 print:top-0 print:h-full print:w-1/3">
-        <table className="w-full [.is-generating-pdf_&]:-mt-[15mm]">
-          <thead className="h-0 [.is-generating-pdf_&]:h-[15mm]">
+        <table className="w-full print:-mt-[15mm] [.is-generating-pdf_&]:-mt-[15mm]">
+          <thead className="h-0 print:h-[15mm] [.is-generating-pdf_&]:h-[15mm]">
             <tr>
-              <td className="h-0 [.is-generating-pdf_&]:h-[15mm]"></td>
+              <td className="h-0 print:h-[15mm] [.is-generating-pdf_&]:h-[15mm]"></td>
             </tr>
           </thead>
           <tbody>
@@ -472,18 +472,18 @@ const Creative = ({ data }) => {
           </tbody>
 
           {/* RODAPÉ FANTASMA LATERAL */}
-          <tfoot className="h-0 [.is-generating-pdf_&]:h-[20mm]">
-            <tr><td className="h-0 [.is-generating-pdf_&]:h-[20mm]"></td></tr>
+          <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </tfoot>
         </table>
       </aside>
 
       {/* Main Content */}
       <main className="w-2/3 bg-white print:bg-transparent print:w-2/3 print:ml-[33.333333%]">
-        <table className="w-full [.is-generating-pdf_&]:-mt-[25mm]">
-          <thead className="h-0 [.is-generating-pdf_&]:h-[15mm]">
+        <table className="w-full print:-mt-[25mm] [.is-generating-pdf_&]:-mt-[25mm]">
+          <thead className="h-0 print:h-[15mm] [.is-generating-pdf_&]:h-[15mm]">
             <tr>
-              <td className="h-0 [.is-generating-pdf_&]:h-[15mm]"></td>
+              <td className="h-0 print:h-[15mm] [.is-generating-pdf_&]:h-[15mm]"></td>
             </tr>
           </thead>
           <tbody>
@@ -553,8 +553,8 @@ const Creative = ({ data }) => {
           </tbody>
 
           {/* RODAPÉ FANTASMA CENTRAL */}
-          <tfoot className="h-0 [.is-generating-pdf_&]:h-[20mm]">
-            <tr><td className="h-0 [.is-generating-pdf_&]:h-[20mm]"></td></tr>
+          <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </tfoot>
         </table>
       </main>
