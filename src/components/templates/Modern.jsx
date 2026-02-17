@@ -307,9 +307,9 @@ const Modern = ({ data }) => {
 
       {/* --- LEFT COLUMN (Main Content) --- */}
       <div className="w-2/3 relative z-10 print:w-2/3">
-        <table className="w-full print:-mt-[20mm]">
-          <thead className="h-0 print:h-[20mm]">
-            <tr><td className="h-0 print:h-[20mm]"></td></tr>
+        <table className="w-full print:-mt-[20mm] [.is-generating-pdf_&]:-mt-[20mm]">
+          <thead className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </thead>
           <tbody>
             <tr>
@@ -402,17 +402,17 @@ const Modern = ({ data }) => {
           </tbody>
 
           {/* RODAPÉ FANTASMA ESQUERDA */}
-          <tfoot className="h-[20mm] print:h-[20mm]">
-            <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+          <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </tfoot>
         </table>
       </div>
 
       {/* --- RIGHT COLUMN (Sidebar) --- */}
       <div className="w-1/3 relative z-10 print:w-1/3">
-        <table className="w-full print:-mt-[20mm]">
-          <thead className="h-0 print:h-[20mm]">
-            <tr><td className="h-0 print:h-[20mm]"></td></tr>
+        <table className="w-full print:-mt-[20mm] [.is-generating-pdf_&]:-mt-[20mm]">
+          <thead className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </thead>
           <tbody>
             <tr>
@@ -434,8 +434,8 @@ const Modern = ({ data }) => {
           </tbody>
 
           {/* RODAPÉ FANTASMA DIREITA */}
-          <tfoot className="h-[20mm] print:h-[20mm]">
-            <tr><td className="h-[20mm] print:h-[20mm]"></td></tr>
+          <tfoot className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]">
+            <tr><td className="h-0 print:h-[20mm] [.is-generating-pdf_&]:h-[20mm]"></td></tr>
           </tfoot>
         </table>
       </div>

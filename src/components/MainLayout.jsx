@@ -165,6 +165,9 @@ const MainLayout = ({ onBack }) => {
           scrollY: 0
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        onclone: (clonedDocument) => {
+          clonedDocument.documentElement.classList.add('is-generating-pdf');
+        },
       };
 
       html2pdf().set(opt).from(element).save();
