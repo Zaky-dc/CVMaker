@@ -165,8 +165,15 @@ const MainLayout = ({ onBack }) => {
           scrollY: 0
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
         onclone: (clonedDocument) => {
           clonedDocument.documentElement.classList.add('is-generating-pdf');
+          // Fix for the white line: ensure table-layout is fixed or auto and borders don't collapse weirdly
+          const tables = clonedDocument.querySelectorAll('table');
+          tables.forEach(t => {
+            t.style.borderCollapse = 'separate';
+            t.style.borderSpacing = '0';
+          });
         },
       };
 
