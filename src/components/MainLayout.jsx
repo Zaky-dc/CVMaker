@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Preview from "./preview/Preview";
 import Editor from "./editor/Editor";
+import html2pdf from "html2pdf.js";
 import {
   Moon,
   Sun,
@@ -103,22 +104,28 @@ const MainLayout = ({ onBack }) => {
         margin: 0;
       }
       @media print {
-        body {
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+        html, body {
+          height: auto !important;
+          overflow: visible !important;
           margin: 0 !important;
           padding: 0 !important;
+          background: white !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         #printable-cv {
-          transform: none !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
           width: 210mm !important;
           height: auto !important;
-          margin: 0 !important;
-          padding: 0 !important;
+          transform: none !important;
           display: block !important;
+          visibility: visible !important;
+          z-index: 9999 !important;
         }
-        /* Hide everything else just in case */
-        .no-print {
+        /* Aggressively hide everything else in the body when printing */
+        body > *:not(iframe) {
           display: none !important;
         }
       }
@@ -135,8 +142,39 @@ const MainLayout = ({ onBack }) => {
     }
   }, [darkMode]);
 
+  const handleDownload = () => {
+    // Check if on mobile (screen width < 768px is a common breakpoint)
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+    if (isMobile) {
+      const element = document.getElementById("printable-cv");
+      if (!element) {
+        console.error("Printable CV element not found");
+        return;
+      }
+
+      const opt = {
+        margin: 0,
+        filename: `Resume_${new Date().toISOString().split("T")[0]}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          scrollX: 0,
+          scrollY: 0
+        },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf().set(opt).from(element).save();
+    } else {
+      handlePrint();
+    }
+  };
+
   return (
-    <div className="flex h-screen flex-col md:flex-row overflow-hidden bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="flex h-screen flex-col md:flex-row overflow-hidden bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300 print:hidden">
       {/* Editor Side (Left) */}
       <aside
         ref={sidebarRef}
@@ -228,7 +266,7 @@ const MainLayout = ({ onBack }) => {
             </button>
 
             <button
-              onClick={handlePrint}
+              onClick={handleDownload}
               className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center gap-2"
               aria-label={t.download}
               title={t.download}
@@ -286,7 +324,7 @@ const MainLayout = ({ onBack }) => {
 
         {/* Floating Download Button for Mobile / Convenience */}
         <button
-          onClick={handlePrint}
+          onClick={handleDownload}
           className="fixed bottom-6 right-6 md:hidden z-50 p-4 bg-primary text-white rounded-full shadow-material-3 hover:bg-primary-dark transition-colors"
         >
           <Download size={24} />
