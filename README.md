@@ -53,3 +53,5 @@ npm run dev
 npm run build
 ```
 
+Desenvolvido com amor por Zakir
+
