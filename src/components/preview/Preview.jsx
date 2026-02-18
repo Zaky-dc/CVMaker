@@ -18,8 +18,9 @@ const Preview = forwardRef((props, ref) => {
     const TemplateComponent = templates[templateId] || Modern;
 
     return (
-        // O ID aqui ajuda no CSS de impressão se necessário, mas o principal é o REF
-        <div ref={ref} className="w-full h-full bg-white" id="printable-cv">
+        // 1. REMOVI o id="printable-cv" (já está no MainLayout)
+        // 2. ADICIONEI "text-black" para evitar bugs de cor no Dark Mode
+        <div ref={ref} className="w-full h-full bg-white text-black">
             <TemplateComponent data={resumeData} />
         </div>
     );
