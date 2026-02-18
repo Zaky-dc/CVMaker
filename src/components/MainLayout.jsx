@@ -92,20 +92,45 @@ const MainLayout = ({ onBack }) => {
   const componentRef = useRef();
 
   // --- CONFIGURAÇÃO DE IMPRESSÃO CORRIGIDA (SIMPLIFICADA) ---
-  const handlePrint = useReactToPrint({
+const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `CV_${new Date().toISOString().split("T")[0]}`,
-    onAfterPrint: () => console.log("Impressão iniciada"),
-    // CSS Limpo: Apenas define o papel e garante cores
+    documentTitle: `CV_Nayeel_${new Date().toISOString().split("T")[0]}`,
+    onAfterPrint: () => console.log("Impressão terminada"),
     pageStyle: `
       @page {
         size: A4;
         margin: 0;
       }
       @media print {
-        body {
-          margin: 0;
-          padding: 0;
+        /* Reset total ao corpo da página de impressão */
+        html, body {
+          height: auto !important;
+          min-height: 100% !important;
+          overflow: visible !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background-color: white !important;
+        }
+
+        /* Garante que o container do CV ocupa o espaço todo e é visível */
+        #printable-content {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          width: 210mm !important;
+          min-height: 297mm !important;
+          height: auto !important; /* IMPORTANTE: Permite crescer */
+          margin: 0 auto !important;
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          background-color: white !important;
+          color: black !important;
+          z-index: 9999;
+        }
+
+        /* Esconde qualquer scrollbar ou elemento estranho */
+        * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
@@ -282,16 +307,21 @@ const MainLayout = ({ onBack }) => {
 
       {/* Preview Side (Right) */}
       <main className="flex-1 h-1/2 md:h-full bg-gray-100 dark:bg-[#1e1e1e] p-4 md:p-8 flex justify-center items-start overflow-y-auto relative">
-        {/* A4 Paper */}
-        <div className="bg-white text-black shadow-material-3 w-[210mm] h-auto min-h-[297mm] origin-top transform scale-50 md:scale-75 lg:scale-[0.65] xl:scale-75 2xl:scale-90 transition-transform duration-300 p-0">
+        
+        {/* Wrapper visual do papel A4 na tela (com sombras e escala) */}
+        <div className="bg-white text-black shadow-material-3 w-[210mm] min-h-[297mm] origin-top transform scale-50 md:scale-75 lg:scale-[0.65] xl:scale-75 2xl:scale-90 transition-transform duration-300 p-0">
           
-          {/* IMPORTANT: O ref está AQUI. A biblioteca pega apenas nisto. */}
-          <div className="h-full w-full relative">
-            <Preview ref={componentRef} />
+          {/* IMPORTANTE: Este é o elemento que o 'componentRef' vai agarrar.
+             Adicionei id="printable-content" para ligar ao CSS acima.
+             Atenção: NÃO coloques classes como 'h-full' ou 'absolute' aqui.
+          */}
+          <div ref={componentRef} id="printable-content">
+            <Preview />
           </div>
+
         </div>
 
-        {/* Floating Download Button (Mobile) */}
+        {/* Botão Flutuante Mobile */}
         <button
           onClick={handlePrint}
           className="fixed bottom-6 right-6 md:hidden z-50 p-4 bg-primary text-white rounded-full shadow-material-3 hover:bg-primary-dark transition-colors"
