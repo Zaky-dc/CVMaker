@@ -91,11 +91,13 @@ const MainLayout = ({ onBack }) => {
 
   const componentRef = useRef();
 
-  // --- CONFIGURAÇÃO DE IMPRESSÃO (Nativa e Robusta) ---
+  // --- CONFIGURAÇÃO DE IMPRESSÃO CORRIGIDA ---
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `CV_${new Date().toISOString().split("T")[0]}`,
-    onAfterPrint: () => console.log("PDF gerado com sucesso"),
+    documentTitle: `Resume_${new Date().toISOString().split("T")[0]}`,
+    onAfterPrint: () => console.log("Impressão concluída"),
+    // Removemos a lógica de esconder elementos. A biblioteca isola o componente.
+    // Apenas garantimos que o corpo da impressão tem o tamanho certo.
     pageStyle: `
       @page {
         size: A4;
@@ -106,28 +108,12 @@ const MainLayout = ({ onBack }) => {
           height: 100vh;
           margin: 0 !important;
           padding: 0 !important;
-          overflow: visible !important;
+          background: white;
+        }
+        /* Garante que as cores de fundo (backgrounds) são impressas */
+        * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
-        }
-        
-        /* Força o tamanho A4 exato, ignorando a largura do telemóvel */
-        #printable-cv {
-          width: 210mm !important;
-          min-height: 297mm !important;
-          margin: 0 auto !important;
-          background-color: white !important;
-          position: absolute !important;
-          left: 0 !important;
-          top: 0 !important;
-          z-index: 9999 !important;
-          /* Remove qualquer transformação ou escala do ecrã */
-          transform: none !important; 
-        }
-
-        /* Esconde tudo o resto na página durante a impressão */
-        body > *:not(#printable-cv) {
-          display: none !important;
         }
       }
     `,
@@ -248,7 +234,6 @@ const MainLayout = ({ onBack }) => {
               </span>
             </button>
 
-            {/* BOTÃO DE DOWNLOAD (Agora usa sempre handlePrint) */}
             <button
               onClick={handlePrint}
               className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center gap-2"
@@ -309,8 +294,8 @@ const MainLayout = ({ onBack }) => {
         {/* A4 Paper */}
         <div className="bg-white text-black shadow-material-3 w-[210mm] h-auto min-h-[297mm] origin-top transform scale-50 md:scale-75 lg:scale-[0.65] xl:scale-75 2xl:scale-90 transition-transform duration-300 p-0">
           
-          {/* Adicionei o ID 'printable-cv' aqui, que é usado no CSS de impressão */}
-          <div className="h-full w-full relative" id="printable-cv">
+          {/* O Preview recebe a ref. O conteúdo DENTRO do Preview é o que será impresso. */}
+          <div className="h-full w-full relative">
             <Preview ref={componentRef} />
           </div>
         </div>
