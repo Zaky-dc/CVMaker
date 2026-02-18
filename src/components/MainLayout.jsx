@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Preview from "./preview/Preview";
 import Editor from "./editor/Editor";
-// Removemos o html2pdf pois ele quebra o layout de tabelas
 import {
   Moon,
   Sun,
@@ -9,7 +8,6 @@ import {
   LogIn,
   LogOut,
   User as UserIcon,
-  Globe,
   Save,
   ArrowLeft,
   FileText,
@@ -93,11 +91,11 @@ const MainLayout = ({ onBack }) => {
 
   const componentRef = useRef();
 
-  // Configuração robusta de impressão que funciona em Mobile e Desktop
+  // --- CONFIGURAÇÃO DE IMPRESSÃO (Nativa e Robusta) ---
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `Resume_${new Date().toISOString().split("T")[0]}`,
-    onAfterPrint: () => console.log("Printed successfully"),
+    documentTitle: `CV_${new Date().toISOString().split("T")[0]}`,
+    onAfterPrint: () => console.log("PDF gerado com sucesso"),
     pageStyle: `
       @page {
         size: A4;
@@ -105,45 +103,31 @@ const MainLayout = ({ onBack }) => {
       }
       @media print {
         html, body {
-          height: 100vh; /* Garante altura total */
+          height: 100vh;
           margin: 0 !important;
           padding: 0 !important;
           overflow: visible !important;
-          background: white !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
         
-        /* Garante que o container do CV tenha o tamanho A4 exato, mesmo vindo de mobile */
+        /* Força o tamanho A4 exato, ignorando a largura do telemóvel */
         #printable-cv {
           width: 210mm !important;
           min-height: 297mm !important;
           margin: 0 auto !important;
           background-color: white !important;
-          position: relative !important;
-          display: block !important;
-          visibility: visible !important;
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
           z-index: 9999 !important;
-          /* Remove escalas que possam vir da view mobile */
-          transform: scale(1) !important; 
-          transform-origin: top left !important;
+          /* Remove qualquer transformação ou escala do ecrã */
+          transform: none !important; 
         }
 
-        /* Esconde tudo o resto agressivamente */
-        body * {
-          visibility: hidden;
-        }
-        
-        /* Mostra apenas o conteúdo do CV e seus filhos */
-        #printable-cv, #printable-cv * {
-          visibility: visible;
-        }
-        
-        /* Posiciona o CV no topo absoluto */
-        #printable-cv {
-          position: absolute;
-          left: 0;
-          top: 0;
+        /* Esconde tudo o resto na página durante a impressão */
+        body > *:not(#printable-cv) {
+          display: none !important;
         }
       }
     `,
@@ -158,12 +142,6 @@ const MainLayout = ({ onBack }) => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
-
-  // Agora o botão de download no mobile usa o mesmo motor de impressão do desktop
-  // Isso garante que o 'tfoot' (margens) funcione.
-  const handleDownload = () => {
-    handlePrint();
-  };
 
   return (
     <div className="flex h-screen flex-col md:flex-row overflow-hidden bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300 print:hidden">
@@ -197,7 +175,7 @@ const MainLayout = ({ onBack }) => {
               <h1 className="text-lg font-bold tracking-tight">
                 cv<span className="opacity-80 font-medium">Maker</span>
               </h1>
-            </div>{" "}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -270,14 +248,16 @@ const MainLayout = ({ onBack }) => {
               </span>
             </button>
 
+            {/* BOTÃO DE DOWNLOAD (Agora usa sempre handlePrint) */}
             <button
-              onClick={handleDownload}
+              onClick={handlePrint}
               className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center gap-2"
               aria-label={t.download}
               title={t.download}
             >
               <Download size={20} />
             </button>
+            
             <button
               onClick={() => setDarkMode(!darkMode)}
               className="p-2 rounded-full hover:bg-white/10 transition-colors"
@@ -326,16 +306,18 @@ const MainLayout = ({ onBack }) => {
 
       {/* Preview Side (Right) */}
       <main className="flex-1 h-1/2 md:h-full bg-gray-100 dark:bg-[#1e1e1e] p-4 md:p-8 flex justify-center items-start overflow-y-auto relative">
-        {/* A4 Paper - Can grow to multiple pages */}
+        {/* A4 Paper */}
         <div className="bg-white text-black shadow-material-3 w-[210mm] h-auto min-h-[297mm] origin-top transform scale-50 md:scale-75 lg:scale-[0.65] xl:scale-75 2xl:scale-90 transition-transform duration-300 p-0">
-          <div className="h-full w-full relative">
+          
+          {/* Adicionei o ID 'printable-cv' aqui, que é usado no CSS de impressão */}
+          <div className="h-full w-full relative" id="printable-cv">
             <Preview ref={componentRef} />
           </div>
         </div>
 
-        {/* Floating Download Button for Mobile / Convenience */}
+        {/* Floating Download Button (Mobile) */}
         <button
-          onClick={handleDownload}
+          onClick={handlePrint}
           className="fixed bottom-6 right-6 md:hidden z-50 p-4 bg-primary text-white rounded-full shadow-material-3 hover:bg-primary-dark transition-colors"
         >
           <Download size={24} />
