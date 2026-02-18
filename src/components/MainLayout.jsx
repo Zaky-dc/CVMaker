@@ -91,54 +91,23 @@ const MainLayout = ({ onBack }) => {
 
   const componentRef = useRef();
 
-  // --- CONFIGURAÇÃO DE IMPRESSÃO CORRIGIDA PARA TELA BRANCA ---
+  // --- CONFIGURAÇÃO DE IMPRESSÃO CORRIGIDA (SIMPLIFICADA) ---
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: `CV_${new Date().toISOString().split("T")[0]}`,
-    onAfterPrint: () => console.log("Impressão concluída"),
-    // O segredo está aqui no CSS global de impressão
+    onAfterPrint: () => console.log("Impressão iniciada"),
+    // CSS Limpo: Apenas define o papel e garante cores
     pageStyle: `
       @page {
         size: A4;
         margin: 0;
       }
       @media print {
-        html, body {
-          height: 100vh;
-          margin: 0 !important;
-          padding: 0 !important;
-          background-color: white !important;
-        }
-        
-        /* Força TUDO a ser visível e com cores corretas na impressão */
-        #printable-cv {
-          width: 210mm !important;
-          min-height: 297mm !important;
-          background-color: white !important;
-          color: black !important; /* Força texto preto caso esteja em dark mode */
-          display: block !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          margin: 0 auto !important;
-          
-          /* Reseta posições que podem estragar o PDF */
-          position: relative !important;
-          left: auto !important;
-          top: auto !important;
-          transform: none !important;
-        }
-
-        /* Garante que textos dentro do CV não fiquem brancos/invisíveis */
-        #printable-cv * {
-          visibility: visible !important;
+        body {
+          margin: 0;
+          padding: 0;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
-        }
-
-        /* Esconde o resto da UI do site */
-        body > *:not(#printable-cv) {
-           /* Nota: react-to-print normalmente lida com isto clonando, 
-              mas se falhar, isto garante que apenas o CV aparece */
         }
       }
     `,
@@ -190,7 +159,6 @@ const MainLayout = ({ onBack }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Language Switcher */}
             <div className="flex items-center bg-primary-dark/20 rounded-lg p-0.5 mr-2">
               <button
                 onClick={() => setLanguage("en")}
@@ -267,7 +235,6 @@ const MainLayout = ({ onBack }) => {
             >
               <Download size={20} />
             </button>
-            
             <button
               onClick={() => setDarkMode(!darkMode)}
               className="p-2 rounded-full hover:bg-white/10 transition-colors"
@@ -297,7 +264,6 @@ const MainLayout = ({ onBack }) => {
           }`}
         ></div>
 
-        {/* Onboarding Tooltip */}
         {showOnboarding && (
           <div className="absolute left-6 top-1/2 -translate-y-1/2 w-64 bg-primary text-white p-4 rounded-2xl shadow-2xl z-50 animate-in fade-in zoom-in duration-300">
             <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rotate-45"></div>
@@ -316,11 +282,11 @@ const MainLayout = ({ onBack }) => {
 
       {/* Preview Side (Right) */}
       <main className="flex-1 h-1/2 md:h-full bg-gray-100 dark:bg-[#1e1e1e] p-4 md:p-8 flex justify-center items-start overflow-y-auto relative">
-        {/* A4 Paper Wrapper */}
+        {/* A4 Paper */}
         <div className="bg-white text-black shadow-material-3 w-[210mm] h-auto min-h-[297mm] origin-top transform scale-50 md:scale-75 lg:scale-[0.65] xl:scale-75 2xl:scale-90 transition-transform duration-300 p-0">
           
-          {/* IMPORTANT: O ID está aqui, no wrapper externo do componente */}
-          <div className="h-full w-full relative" id="printable-cv">
+          {/* IMPORTANT: O ref está AQUI. A biblioteca pega apenas nisto. */}
+          <div className="h-full w-full relative">
             <Preview ref={componentRef} />
           </div>
         </div>
