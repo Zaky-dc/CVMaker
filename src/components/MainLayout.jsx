@@ -91,13 +91,12 @@ const MainLayout = ({ onBack }) => {
 
   const componentRef = useRef();
 
-  // --- CONFIGURAÇÃO DE IMPRESSÃO CORRIGIDA ---
+  // --- CONFIGURAÇÃO DE IMPRESSÃO CORRIGIDA PARA TELA BRANCA ---
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `Resume_${new Date().toISOString().split("T")[0]}`,
+    documentTitle: `CV_${new Date().toISOString().split("T")[0]}`,
     onAfterPrint: () => console.log("Impressão concluída"),
-    // Removemos a lógica de esconder elementos. A biblioteca isola o componente.
-    // Apenas garantimos que o corpo da impressão tem o tamanho certo.
+    // O segredo está aqui no CSS global de impressão
     pageStyle: `
       @page {
         size: A4;
@@ -108,12 +107,38 @@ const MainLayout = ({ onBack }) => {
           height: 100vh;
           margin: 0 !important;
           padding: 0 !important;
-          background: white;
+          background-color: white !important;
         }
-        /* Garante que as cores de fundo (backgrounds) são impressas */
-        * {
+        
+        /* Força TUDO a ser visível e com cores corretas na impressão */
+        #printable-cv {
+          width: 210mm !important;
+          min-height: 297mm !important;
+          background-color: white !important;
+          color: black !important; /* Força texto preto caso esteja em dark mode */
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          margin: 0 auto !important;
+          
+          /* Reseta posições que podem estragar o PDF */
+          position: relative !important;
+          left: auto !important;
+          top: auto !important;
+          transform: none !important;
+        }
+
+        /* Garante que textos dentro do CV não fiquem brancos/invisíveis */
+        #printable-cv * {
+          visibility: visible !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+        }
+
+        /* Esconde o resto da UI do site */
+        body > *:not(#printable-cv) {
+           /* Nota: react-to-print normalmente lida com isto clonando, 
+              mas se falhar, isto garante que apenas o CV aparece */
         }
       }
     `,
@@ -291,11 +316,11 @@ const MainLayout = ({ onBack }) => {
 
       {/* Preview Side (Right) */}
       <main className="flex-1 h-1/2 md:h-full bg-gray-100 dark:bg-[#1e1e1e] p-4 md:p-8 flex justify-center items-start overflow-y-auto relative">
-        {/* A4 Paper */}
+        {/* A4 Paper Wrapper */}
         <div className="bg-white text-black shadow-material-3 w-[210mm] h-auto min-h-[297mm] origin-top transform scale-50 md:scale-75 lg:scale-[0.65] xl:scale-75 2xl:scale-90 transition-transform duration-300 p-0">
           
-          {/* O Preview recebe a ref. O conteúdo DENTRO do Preview é o que será impresso. */}
-          <div className="h-full w-full relative">
+          {/* IMPORTANT: O ID está aqui, no wrapper externo do componente */}
+          <div className="h-full w-full relative" id="printable-cv">
             <Preview ref={componentRef} />
           </div>
         </div>
