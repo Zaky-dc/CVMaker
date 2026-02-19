@@ -11,9 +11,9 @@ export default defineConfig({
       // Only polyfill what we need to keep the bundle lean
       include: ['buffer', 'process', 'stream', 'util'],
       globals: {
-        Buffer: true,
+        Buffer: false, // Don't inject Buffer globally (saves size in main bundle)
         global: true,
-        process: true,
+        process: false, // Don't inject process globally
       },
     }),
     react(),

@@ -1,11 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Buffer } from 'buffer'
-import './index.css'
-import App from './App.jsx'
-
-// Polyfill Buffer for the browser
-window.Buffer = window.Buffer || Buffer;
+// Polyfill moved to MainLayout.jsx for lazy loading
 
 
 createRoot(document.getElementById('root')).render(

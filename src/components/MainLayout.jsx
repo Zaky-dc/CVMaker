@@ -22,6 +22,15 @@ import { useLanguage } from "../context/LanguageContext";
 import { useResume } from "../context/ResumeContext";
 import { pdfTranslations } from "../utils/pdfTranslations";
 import { useNavigate } from "react-router-dom";
+import { Buffer } from "buffer";
+import process from "process";
+
+// Polyfill Buffer and process for @react-pdf/renderer
+// This is done here instead of globally in vite.config.js to avoid bloating the main bundle
+if (typeof window !== "undefined") {
+  window.Buffer = window.Buffer || Buffer;
+  window.process = window.process || process;
+}
 
 // ─── Nav Rail Button ────────────────────────────────────────────────────────
 const NavBtn = ({ icon: Icon, onClick, label, active = false, danger = false, children }) => (
