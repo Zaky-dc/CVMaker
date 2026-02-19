@@ -2,10 +2,8 @@ import Modern from '../components/templates/Modern';
 import Classic from '../components/templates/Classic';
 import Creative from '../components/templates/Creative';
 
-// Placeholder imports for PDF components - we will create these next
-import ModernPDF from '../components/templates/pdf/ModernPDF';
-import ClassicPDF from '../components/templates/pdf/ClassicPDF';
-import CreativePDF from '../components/templates/pdf/CreativePDF';
+// PDF components will be loaded dynamically to avoid bundling @react-pdf/renderer
+// in the main chunk. This saves ~1.5MB of bundle size.
 
 export const TEMPLATE_REGISTRY = [
     {
@@ -13,7 +11,7 @@ export const TEMPLATE_REGISTRY = [
         name: 'Modern Professional',
         isPremium: false,
         component: Modern,
-        pdfComponent: ModernPDF,
+        pdfComponent: () => import('../components/templates/pdf/ModernPDF'),
         thumbnail: '/thumbnails/modern.png',
         color: 'bg-blue-500'
     },
@@ -22,7 +20,7 @@ export const TEMPLATE_REGISTRY = [
         name: 'Classic Elegant',
         isPremium: false,
         component: Classic,
-        pdfComponent: ClassicPDF,
+        pdfComponent: () => import('../components/templates/pdf/ClassicPDF'),
         thumbnail: '/thumbnails/classic.png',
         color: 'bg-gray-800'
     },
@@ -31,7 +29,7 @@ export const TEMPLATE_REGISTRY = [
         name: 'Creative Visual',
         isPremium: true,
         component: Creative,
-        pdfComponent: CreativePDF,
+        pdfComponent: () => import('../components/templates/pdf/CreativePDF'),
         thumbnail: '/thumbnails/creative.png',
         color: 'bg-purple-500'
     }
