@@ -1,16 +1,187 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --nav-rail-width: 72px;
+    --editor-min-width: 380px;
+    --editor-max-width: 680px;
+    --radius: 10px;
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900 font-sans;
-    font-family: "Roboto", sans-serif;
+    font-family: "Inter", sans-serif;
+    @apply bg-slate-100 text-slate-900 antialiased;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  /* Premium scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
   }
 }
 
+@layer components {
+
+  /* Floating label input */
+  .float-field {
+    @apply relative;
+  }
+
+  .float-field input,
+  .float-field textarea,
+  .float-field select {
+    @apply block w-full px-3 pt-5 pb-1.5 text-sm text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:focus:border-indigo-400;
+  }
+
+  .float-field textarea {
+    @apply resize-none pt-6 pb-2;
+  }
+
+  .float-field label {
+    @apply absolute left-3 text-slate-400 dark:text-slate-500 pointer-events-none transition-all duration-200 origin-left;
+    top: 50%;
+    transform: translateY(-50%) scale(1);
+    font-size: 0.875rem;
+  }
+
+  .float-field.textarea-field label {
+    top: 1rem;
+    transform: translateY(0) scale(1);
+  }
+
+  .float-field input:focus~label,
+  .float-field input:not(:placeholder-shown)~label,
+  .float-field textarea:focus~label,
+  .float-field textarea:not(:placeholder-shown)~label,
+  .float-field select:focus~label,
+  .float-field select:not([value=""])~label {
+    top: 0.45rem;
+    transform: translateY(0) scale(0.78);
+    @apply text-indigo-500 dark:text-indigo-400 font-medium;
+  }
+
+  .float-field.textarea-field input:focus~label,
+  .float-field.textarea-field textarea:focus~label,
+  .float-field.textarea-field textarea:not(:placeholder-shown)~label {
+    top: 0.45rem;
+    transform: translateY(0) scale(0.78);
+    @apply text-indigo-500 dark:text-indigo-400 font-medium;
+  }
+
+  /* Nav action button */
+  .nav-btn {
+    @apply relative flex flex-col items-center justify-center w-12 h-12 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-200 cursor-pointer;
+  }
+
+  .nav-btn.active {
+    @apply text-white bg-white/15;
+  }
+
+  .nav-btn-tooltip {
+    @apply absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs rounded-md opacity-0 transition-opacity pointer-events-none whitespace-nowrap z-50;
+  }
+
+  .nav-btn:hover .nav-btn-tooltip {
+    opacity: 1;
+  }
+
+  /* Section item card */
+  .item-card {
+    @apply relative p-4 border border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50/70 dark:bg-slate-800/60 hover:border-indigo-200 dark:hover:border-indigo-800/60 transition-all duration-200;
+  }
+
+  /* Preview checkerboard background */
+  .preview-bg {
+    background-color: #e2e8f0;
+    background-image:
+      linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+      linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+      linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  .dark .preview-bg {
+    background-color: #1a1f2e;
+    background-image:
+      linear-gradient(45deg, #1e2435 25%, transparent 25%),
+      linear-gradient(-45deg, #1e2435 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1e2435 75%),
+      linear-gradient(-45deg, transparent 75%, #1e2435 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  /* Skill tag */
+  .skill-tag {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/50;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-out both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-left {
+    animation: slideLeft 0.3s ease-out both;
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Print styles */
 @media print {
   @page {
     size: A4;
@@ -25,35 +196,22 @@
     print-color-adjust: exact;
   }
 
-  /* Allow CV to span multiple pages */
   #cv-template {
     width: 210mm;
     min-height: 297mm;
-    padding-top: 15mm;
-    padding-bottom: 15mm;
-    /* Remove height and overflow restrictions to allow page breaks */
   }
 
-  /* Avoid breaking inside elements */
   .avoid-break {
     page-break-inside: avoid;
     break-inside: avoid;
-    margin-top: 0;
   }
 
-  /* Add spacing to sections that might start a new page */
-  section:not(:first-child) {
-    margin-top: 0.75rem;
-  }
-
-  /* Force page break before certain elements if needed */
   .page-break-before {
     page-break-before: always;
     break-before: always;
     padding-top: 1rem;
   }
 
-  /* Prevent page break after certain elements */
   h2,
   h3,
   h4 {
@@ -61,13 +219,11 @@
     break-after: avoid;
   }
 
-  /* Hanging indent for bullet lists */
   .hanging-indent {
     padding-left: 1.25rem;
     text-indent: -1.25rem;
   }
 
-  /* Hide elements not needed for print */
   .no-print {
     display: none !important;
   }

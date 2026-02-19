@@ -159,138 +159,81 @@ const Editor = () => {
       case "personal":
         return (
           <ExpansionPanel title={t.personalDetails} icon={User} defaultExpanded>
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-4">
+            <div className="space-y-4">
+              {/* Photo & Signature Row */}
+              <div className="flex items-center gap-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-700/30 border border-slate-100 dark:border-slate-700">
+                {/* Photo */}
+                <div className="flex items-center gap-3">
                   {resumeData.personal.photoUrl ? (
                     <img
                       src={resumeData.personal.photoUrl}
                       alt="Profile"
-                      className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-indigo-400 flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400">
-                      <User size={24} />
+                    <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0">
+                      <User size={20} />
                     </div>
                   )}
                   <button
                     type="button"
                     onClick={handlePhotoUpload}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors"
                   >
-                    <Camera size={16} />
-                    {resumeData.personal.photoUrl
-                      ? t.changePhoto
-                      : t.uploadPhoto}
+                    <Camera size={13} />
+                    {resumeData.personal.photoUrl ? t.changePhoto : t.uploadPhoto}
                   </button>
                 </div>
 
-                {/* Signature Upload */}
-                <div className="flex items-center gap-4">
+                <div className="w-px h-10 bg-slate-200 dark:bg-slate-600" />
+
+                {/* Signature */}
+                <div className="flex items-center gap-3">
                   {resumeData.personal.signatureUrl ? (
                     <img
                       src={resumeData.personal.signatureUrl}
                       alt="Signature"
-                      className="w-24 h-12 rounded object-contain border border-gray-200 dark:border-gray-700 bg-white"
+                      className="h-10 w-20 rounded object-contain border border-slate-200 dark:border-slate-600 bg-white"
                     />
                   ) : (
-                    <div className="w-24 h-12 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 border border-dashed border-gray-300">
-                      <PenTool size={16} />
+                    <div className="h-10 w-20 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 border border-dashed border-slate-300 dark:border-slate-600">
+                      <PenTool size={13} />
                     </div>
                   )}
                   <button
                     type="button"
                     onClick={handleSignatureUpload}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 border border-indigo-300 dark:border-indigo-700 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
                   >
-                    <PenTool size={16} />
-                    {resumeData.personal.signatureUrl
-                      ? t.changeSignature
-                      : t.uploadSignature}
+                    <PenTool size={13} />
+                    {resumeData.personal.signatureUrl ? t.changeSignature : t.uploadSignature}
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <TextField
-                  label={t.firstName}
-                  name="firstName"
-                  value={resumeData.personal.firstName}
-                  onChange={handlePersonalChange}
-                />
-                <TextField
-                  label={t.lastName}
-                  name="lastName"
-                  value={resumeData.personal.lastName}
-                  onChange={handlePersonalChange}
-                />
-                <TextField
-                  label={t.email}
-                  name="email"
-                  type="email"
-                  value={resumeData.personal.email}
-                  onChange={handlePersonalChange}
-                />
-                <TextField
-                  label={t.phone}
-                  name="phone"
-                  type="tel"
-                  value={resumeData.personal.phone}
-                  onChange={handlePersonalChange}
-                />
-                <div className="col-span-2 md:col-span-1">
-                  <TextField
-                    label={t.roleTitle}
-                    name="role"
-                    value={resumeData.personal.role || ""}
-                    onChange={handlePersonalChange}
-                  />
-                </div>
-                <div className="col-span-2 md:col-span-1">
-                  <TextField
-                    label={t.website}
-                    name="website"
-                    value={resumeData.personal.website || ""}
-                    onChange={handlePersonalChange}
-                  />
-                </div>
-                <TextField
-                  label={t.birthDate}
-                  name="birthDate"
-                  type="date"
-                  value={resumeData.personal.birthDate || ""}
-                  onChange={handlePersonalChange}
-                />
-                <TextField
-                  label={t.civilStatus}
-                  name="civilStatus"
-                  value={resumeData.personal.civilStatus || ""}
-                  onChange={handlePersonalChange}
-                />
-                <TextField
-                  label={t.gender}
-                  name="gender"
-                  value={resumeData.personal.gender || ""}
-                  onChange={handlePersonalChange}
-                />
-                <TextField
-                  label={t.nationality}
-                  name="nationality"
-                  value={resumeData.personal.nationality || ""}
-                  onChange={handlePersonalChange}
-                />
+              {/* Fields grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <TextField label={t.firstName} name="firstName" value={resumeData.personal.firstName} onChange={handlePersonalChange} />
+                <TextField label={t.lastName} name="lastName" value={resumeData.personal.lastName} onChange={handlePersonalChange} />
+                <TextField label={t.email} name="email" type="email" value={resumeData.personal.email} onChange={handlePersonalChange} />
+                <TextField label={t.phone} name="phone" type="tel" value={resumeData.personal.phone} onChange={handlePersonalChange} />
+                <TextField label={t.roleTitle} name="role" value={resumeData.personal.role || ""} onChange={handlePersonalChange} />
+                <TextField label={t.website} name="website" value={resumeData.personal.website || ""} onChange={handlePersonalChange} />
+                <TextField label={t.birthDate} name="birthDate" type="date" value={resumeData.personal.birthDate || ""} onChange={handlePersonalChange} />
+                <TextField label={t.civilStatus} name="civilStatus" value={resumeData.personal.civilStatus || ""} onChange={handlePersonalChange} />
+                <TextField label={t.gender} name="gender" value={resumeData.personal.gender || ""} onChange={handlePersonalChange} />
+                <TextField label={t.nationality} name="nationality" value={resumeData.personal.nationality || ""} onChange={handlePersonalChange} />
                 <div className="col-span-2">
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                    {t.summary}
-                  </label>
-                  <textarea
-                    rows="4"
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 dark:border-gray-600 dark:text-white focus:ring-0 focus:border-primary resize-y"
-                    placeholder={t.summaryPlaceholder}
-                    name="summary"
-                    value={resumeData.personal.summary}
-                    onChange={handlePersonalChange}
-                  ></textarea>
+                  <div className="float-field textarea-field">
+                    <textarea
+                      rows="4"
+                      placeholder=" "
+                      name="summary"
+                      value={resumeData.personal.summary}
+                      onChange={handlePersonalChange}
+                    />
+                    <label>{t.summary}</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -301,84 +244,60 @@ const Editor = () => {
           <ExpansionPanel title={t.experience} icon={Briefcase}>
             <div className="space-y-6">
               {(resumeData.experience || []).map((exp) => (
-                <div
-                  key={exp.id}
-                  className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-white/5 relative group"
-                >
+                <div key={exp.id} className="item-card group">
                   <button
                     onClick={() => removeExperience(exp.id)}
-                    className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove Item"
+                    className="absolute top-2.5 right-2.5 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Remove"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
 
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <TextField
                       label={t.jobTitle}
                       name="role"
                       value={exp.role}
-                      onChange={(e) =>
-                        updateExperience(exp.id, "role", e.target.value)
-                      }
+                      onChange={(e) => updateExperience(exp.id, "role", e.target.value)}
                     />
                     <TextField
                       label={t.company}
                       name="company"
                       value={exp.company}
-                      onChange={(e) =>
-                        updateExperience(exp.id, "company", e.target.value)
-                      }
+                      onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
                     />
                     <MonthPicker
                       label={t.startDate}
                       name="startDate"
                       value={exp.startDate}
-                      onChange={(e) =>
-                        updateExperience(exp.id, "startDate", e.target.value)
-                      }
+                      onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)}
                     />
                     <MonthPicker
                       label={t.endDate}
                       name="endDate"
                       value={exp.endDate}
-                      onChange={(e) =>
-                        updateExperience(exp.id, "endDate", e.target.value)
-                      }
+                      onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
                     />
-                    <div className="col-span-1 md:col-span-2">
-                      <label className="block mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {t.description}
-                      </label>
-                      <textarea
-                        rows="3"
-                        className="block w-full text-sm text-gray-900 bg-transparent border-0 border-b border-gray-300 dark:border-gray-600 dark:text-white focus:ring-0 focus:border-primary resize-y"
-                        value={exp.description}
-                        onChange={(e) =>
-                          updateExperience(
-                            exp.id,
-                            "description",
-                            e.target.value,
-                          )
-                        }
-                        onKeyDown={(e) =>
-                          handleDescriptionKeyDown(
-                            e,
-                            "experience",
-                            exp.id,
-                            "description",
-                          )
-                        }
-                      ></textarea>
+                    <div className="col-span-2">
+                      <div className="float-field textarea-field">
+                        <textarea
+                          rows="3"
+                          placeholder=" "
+                          value={exp.description}
+                          onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
+                          onKeyDown={(e) => handleDescriptionKeyDown(e, "experience", exp.id, "description")}
+                        />
+                        <label>{t.description}</label>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
               <button
                 onClick={addExperience}
-                className="w-full py-2 flex items-center justify-center gap-2 text-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 flex items-center justify-center gap-2 text-indigo-500 dark:text-indigo-400 text-sm font-medium border border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
               >
-                <Plus size={16} /> {t.addExperience}
+                <Plus size={15} /> {t.addExperience}
               </button>
             </div>
           </ExpansionPanel>
@@ -388,59 +307,48 @@ const Editor = () => {
           <ExpansionPanel title={t.education} icon={GraduationCap}>
             <div className="space-y-6">
               {(resumeData.education || []).map((edu) => (
-                <div
-                  key={edu.id}
-                  className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-white/5 relative group"
-                >
+                <div key={edu.id} className="item-card group">
                   <button
                     onClick={() => removeEducation(edu.id)}
-                    className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove Item"
+                    className="absolute top-2.5 right-2.5 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Remove"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
 
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <TextField
                       label={t.school}
                       name="school"
                       value={edu.school || ""}
-                      onChange={(e) =>
-                        updateEducationItem(edu.id, "school", e.target.value)
-                      }
+                      onChange={(e) => updateEducationItem(edu.id, "school", e.target.value)}
                     />
                     <TextField
                       label={t.degree}
                       name="degree"
                       value={edu.degree || ""}
-                      onChange={(e) =>
-                        updateEducationItem(edu.id, "degree", e.target.value)
-                      }
+                      onChange={(e) => updateEducationItem(edu.id, "degree", e.target.value)}
                     />
                     <MonthPicker
                       label={t.startDate}
                       name="startDate"
                       value={edu.startDate || ""}
-                      onChange={(e) =>
-                        updateEducationItem(edu.id, "startDate", e.target.value)
-                      }
+                      onChange={(e) => updateEducationItem(edu.id, "startDate", e.target.value)}
                     />
                     <MonthPicker
                       label={t.endDate}
                       name="endDate"
                       value={edu.endDate || ""}
-                      onChange={(e) =>
-                        updateEducationItem(edu.id, "endDate", e.target.value)
-                      }
+                      onChange={(e) => updateEducationItem(edu.id, "endDate", e.target.value)}
                     />
                   </div>
                 </div>
               ))}
               <button
                 onClick={addEducation}
-                className="w-full py-2 flex items-center justify-center gap-2 text-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 flex items-center justify-center gap-2 text-indigo-500 dark:text-indigo-400 text-sm font-medium border border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
               >
-                <Plus size={16} /> {t.addEducation}
+                <Plus size={15} /> {t.addEducation}
               </button>
             </div>
           </ExpansionPanel>
@@ -455,36 +363,36 @@ const Editor = () => {
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-primary"
+                  className="flex-1 px-3 py-2 text-sm text-slate-900 dark:text-white
+                             bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600
+                             rounded-lg outline-none transition-all
+                             focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10"
                   placeholder={t.skillsPlaceholder}
                 />
                 <button
                   onClick={handleAddSkill}
-                  className="text-white bg-primary hover:bg-primary-dark focus:ring-4 focus:outline-none focus:ring-primary/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center gap-2"
+                  className="px-4 py-2 text-white bg-indigo-500 hover:bg-indigo-600 rounded-lg font-medium text-sm transition-colors flex items-center gap-1"
                 >
-                  <Plus size={16} />
+                  <Plus size={15} />
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {(resumeData.skills || []).map((skill, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full dark:bg-primary/20 dark:text-primary-light flex items-center gap-2"
-                  >
+                  <span key={idx} className="skill-tag">
                     {typeof skill === "string" ? skill : skill.name}
                     <button
                       onClick={() => handleRemoveSkill(idx)}
-                      className="hover:text-red-500 transition-colors"
+                      className="hover:text-red-500 transition-colors ml-0.5"
                     >
-                      <X size={14} />
+                      <X size={12} />
                     </button>
                   </span>
                 ))}
               </div>
               {(!resumeData.skills || resumeData.skills.length === 0) && (
-                <p className="text-sm text-gray-400 italic">
-                  No skills added yet.
+                <p className="text-xs text-slate-400 italic mt-2">
+                  Adiciona competências acima...
                 </p>
               )}
             </div>
@@ -495,37 +403,33 @@ const Editor = () => {
           <ExpansionPanel title={t.languages} icon={Globe}>
             <div className="space-y-6">
               {(resumeData.languages || []).map((lang) => (
-                <div
-                  key={lang.id}
-                  className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-white/5 relative group"
-                >
+                <div key={lang.id} className="item-card group">
                   <button
                     onClick={() => removeLanguage(lang.id)}
-                    className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove Item"
+                    className="absolute top-2.5 right-2.5 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Remove"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <TextField
                       label={t.language}
                       name="language"
                       value={lang.language || ""}
-                      onChange={(e) =>
-                        updateLanguage(lang.id, "language", e.target.value)
-                      }
+                      onChange={(e) => updateLanguage(lang.id, "language", e.target.value)}
                     />
                     <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                      <label className="block mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                         {t.proficiency}
                       </label>
                       <select
                         value={lang.proficiency || "intermediate"}
-                        onChange={(e) =>
-                          updateLanguage(lang.id, "proficiency", e.target.value)
-                        }
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        onChange={(e) => updateLanguage(lang.id, "proficiency", e.target.value)}
+                        className="w-full px-3 py-2 text-sm text-slate-900 dark:text-white
+                                   bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600
+                                   rounded-lg outline-none transition-all
+                                   focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10"
                       >
                         <option value="native">{t.native}</option>
                         <option value="fluent">{t.fluent}</option>
@@ -539,9 +443,9 @@ const Editor = () => {
               ))}
               <button
                 onClick={addLanguage}
-                className="w-full py-2 flex items-center justify-center gap-2 text-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 flex items-center justify-center gap-2 text-indigo-500 dark:text-indigo-400 text-sm font-medium border border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
               >
-                <Plus size={16} /> {t.addLanguage}
+                <Plus size={15} /> {t.addLanguage}
               </button>
             </div>
           </ExpansionPanel>
@@ -551,59 +455,48 @@ const Editor = () => {
           <ExpansionPanel title={t.certificates} icon={Award}>
             <div className="space-y-6">
               {(resumeData.certificates || []).map((cert) => (
-                <div
-                  key={cert.id}
-                  className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-white/5 relative group"
-                >
+                <div key={cert.id} className="item-card group">
                   <button
                     onClick={() => removeCertificate(cert.id)}
-                    className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove Item"
+                    className="absolute top-2.5 right-2.5 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Remove"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <TextField
                       label={t.certificate}
                       name="name"
                       value={cert.name || ""}
-                      onChange={(e) =>
-                        updateCertificate(cert.id, "name", e.target.value)
-                      }
+                      onChange={(e) => updateCertificate(cert.id, "name", e.target.value)}
                     />
                     <TextField
                       label={t.issuer}
                       name="issuer"
                       value={cert.issuer || ""}
-                      onChange={(e) =>
-                        updateCertificate(cert.id, "issuer", e.target.value)
-                      }
+                      onChange={(e) => updateCertificate(cert.id, "issuer", e.target.value)}
                     />
                     <MonthPicker
                       label={t.certificateDate}
                       name="date"
                       value={cert.date || ""}
-                      onChange={(e) =>
-                        updateCertificate(cert.id, "date", e.target.value)
-                      }
+                      onChange={(e) => updateCertificate(cert.id, "date", e.target.value)}
                     />
                     <TextField
                       label={t.certificateUrl}
                       name="url"
                       value={cert.url || ""}
-                      onChange={(e) =>
-                        updateCertificate(cert.id, "url", e.target.value)
-                      }
+                      onChange={(e) => updateCertificate(cert.id, "url", e.target.value)}
                     />
                   </div>
                 </div>
               ))}
               <button
                 onClick={addCertificate}
-                className="w-full py-2 flex items-center justify-center gap-2 text-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 flex items-center justify-center gap-2 text-indigo-500 dark:text-indigo-400 text-sm font-medium border border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
               >
-                <Plus size={16} /> {t.addCertificate}
+                <Plus size={15} /> {t.addCertificate}
               </button>
             </div>
           </ExpansionPanel>
@@ -613,69 +506,56 @@ const Editor = () => {
           <ExpansionPanel title={t.references} icon={Users}>
             <div className="space-y-6">
               {(resumeData.references || []).map((refItem) => (
-                <div
-                  key={refItem.id}
-                  className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-white/5 relative group"
-                >
+                <div key={refItem.id} className="item-card group">
                   <button
                     onClick={() => removeReference(refItem.id)}
-                    className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove Item"
+                    className="absolute top-2.5 right-2.5 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Remove"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <TextField
                       label={t.referenceName}
                       name="name"
                       value={refItem.name || ""}
-                      onChange={(e) =>
-                        updateReference(refItem.id, "name", e.target.value)
-                      }
+                      onChange={(e) => updateReference(refItem.id, "name", e.target.value)}
                     />
                     <TextField
                       label={t.position}
                       name="position"
                       value={refItem.position || ""}
-                      onChange={(e) =>
-                        updateReference(refItem.id, "position", e.target.value)
-                      }
+                      onChange={(e) => updateReference(refItem.id, "position", e.target.value)}
                     />
                     <TextField
                       label={t.company}
                       name="company"
                       value={refItem.company || ""}
-                      onChange={(e) =>
-                        updateReference(refItem.id, "company", e.target.value)
-                      }
+                      onChange={(e) => updateReference(refItem.id, "company", e.target.value)}
                     />
                     <TextField
                       label={t.email}
                       name="email"
                       type="email"
                       value={refItem.email || ""}
-                      onChange={(e) =>
-                        updateReference(refItem.id, "email", e.target.value)
-                      }
+                      onChange={(e) => updateReference(refItem.id, "email", e.target.value)}
                     />
                     <TextField
                       label={t.phone}
                       name="phone"
                       type="tel"
                       value={refItem.phone || ""}
-                      onChange={(e) =>
-                        updateReference(refItem.id, "phone", e.target.value)
-                      }
+                      onChange={(e) => updateReference(refItem.id, "phone", e.target.value)}
                     />
                   </div>
                 </div>
               ))}
               <button
                 onClick={addReference}
-                className="w-full py-2 flex items-center justify-center gap-2 text-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 flex items-center justify-center gap-2 text-indigo-500 dark:text-indigo-400 text-sm font-medium border border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
               >
-                <Plus size={16} /> {t.addReference}
+                <Plus size={15} /> {t.addReference}
               </button>
             </div>
           </ExpansionPanel>
@@ -685,84 +565,60 @@ const Editor = () => {
           <ExpansionPanel title={t.internships} icon={BookOpen}>
             <div className="space-y-6">
               {(resumeData.internships || []).map((intern) => (
-                <div
-                  key={intern.id}
-                  className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-white/5 relative group"
-                >
+                <div key={intern.id} className="item-card group">
                   <button
                     onClick={() => removeInternship(intern.id)}
-                    className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove Item"
+                    className="absolute top-2.5 right-2.5 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Remove"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
 
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <TextField
                       label={t.jobTitle}
                       name="role"
                       value={intern.role}
-                      onChange={(e) =>
-                        updateInternship(intern.id, "role", e.target.value)
-                      }
+                      onChange={(e) => updateInternship(intern.id, "role", e.target.value)}
                     />
                     <TextField
                       label={t.company}
                       name="company"
                       value={intern.company}
-                      onChange={(e) =>
-                        updateInternship(intern.id, "company", e.target.value)
-                      }
+                      onChange={(e) => updateInternship(intern.id, "company", e.target.value)}
                     />
                     <MonthPicker
                       label={t.startDate}
                       name="startDate"
                       value={intern.startDate}
-                      onChange={(e) =>
-                        updateInternship(intern.id, "startDate", e.target.value)
-                      }
+                      onChange={(e) => updateInternship(intern.id, "startDate", e.target.value)}
                     />
                     <MonthPicker
                       label={t.endDate}
                       name="endDate"
                       value={intern.endDate}
-                      onChange={(e) =>
-                        updateInternship(intern.id, "endDate", e.target.value)
-                      }
+                      onChange={(e) => updateInternship(intern.id, "endDate", e.target.value)}
                     />
-                    <div className="col-span-1 md:col-span-2">
-                      <label className="block mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {t.description}
-                      </label>
-                      <textarea
-                        rows="3"
-                        className="block w-full text-sm text-gray-900 bg-transparent border-0 border-b border-gray-300 dark:border-gray-600 dark:text-white focus:ring-0 focus:border-primary resize-y"
-                        value={intern.description}
-                        onChange={(e) =>
-                          updateInternship(
-                            intern.id,
-                            "description",
-                            e.target.value,
-                          )
-                        }
-                        onKeyDown={(e) =>
-                          handleDescriptionKeyDown(
-                            e,
-                            "internships",
-                            intern.id,
-                            "description",
-                          )
-                        }
-                      ></textarea>
+                    <div className="col-span-2">
+                      <div className="float-field textarea-field">
+                        <textarea
+                          rows="3"
+                          placeholder=" "
+                          value={intern.description}
+                          onChange={(e) => updateInternship(intern.id, "description", e.target.value)}
+                          onKeyDown={(e) => handleDescriptionKeyDown(e, "internships", intern.id, "description")}
+                        />
+                        <label>{t.description}</label>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
               <button
                 onClick={addInternship}
-                className="w-full py-2 flex items-center justify-center gap-2 text-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 flex items-center justify-center gap-2 text-indigo-500 dark:text-indigo-400 text-sm font-medium border border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
               >
-                <Plus size={16} /> {t.addInternship}
+                <Plus size={15} /> {t.addInternship}
               </button>
             </div>
           </ExpansionPanel>
@@ -884,23 +740,27 @@ const Editor = () => {
         />
       )}
 
-      <div className="space-y-4 pb-20">
+      <div className="space-y-3 pb-20">
+
         {/* Design & Metadata - Fixed at top */}
         <ExpansionPanel title={t.designTemplate} icon={Palette} defaultExpanded>
           <div className="space-y-4">
             <TemplateSelector />
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                  {t.themeColor}
-                </label>
+            <div>
+              <label className="block mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {t.themeColor}
+              </label>
+              <div className="flex items-center gap-3">
                 <input
                   type="color"
                   name="themeColor"
                   value={resumeData.metadata.themeColor}
                   onChange={handleMetadataChange}
-                  className="w-full h-10 p-0 border-0 rounded cursor-pointer"
+                  className="w-10 h-10 p-0.5 border border-slate-200 dark:border-slate-600 rounded-lg cursor-pointer bg-white dark:bg-slate-800"
                 />
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
+                  {resumeData.metadata.themeColor}
+                </span>
               </div>
             </div>
           </div>

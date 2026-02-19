@@ -1,39 +1,81 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 
-const ExpansionPanel = ({ title, children, defaultExpanded = false, icon: Icon }) => {
+const ExpansionPanel = ({
+    title,
+    children,
+    defaultExpanded = false,
+    icon: Icon,
+    badge = null, // optional badge count/status
+}) => {
     const [expanded, setExpanded] = useState(defaultExpanded);
 
     return (
-        <div className="border border-gray-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden shadow-sm dark:bg-surface-dark transition-all duration-300">
+        <div
+            className={clsx(
+                "rounded-xl border overflow-hidden transition-all duration-200",
+                expanded
+                    ? "border-indigo-200 dark:border-indigo-800/60 shadow-material-1"
+                    : "border-slate-200 dark:border-slate-700 shadow-sm"
+            )}
+        >
+            {/* Header */}
             <button
                 type="button"
-                className={clsx(
-                    "w-full flex items-center justify-between p-4 bg-white dark:bg-[#1e1e1e] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    expanded && "border-b border-gray-100 dark:border-gray-700"
-                )}
                 onClick={() => setExpanded(!expanded)}
+                className={clsx(
+                    "w-full flex items-center justify-between px-4 py-3.5",
+                    "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60",
+                    "focus:outline-none transition-colors duration-150",
+                    expanded && "border-b border-slate-100 dark:border-slate-700"
+                )}
             >
                 <div className="flex items-center gap-3">
-                    {Icon && <Icon className="text-primary dark:text-primary-light" size={20} />}
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{title}</span>
+                    {Icon && (
+                        <div
+                            className={clsx(
+                                "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                                expanded
+                                    ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400"
+                                    : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                            )}
+                        >
+                            <Icon size={16} />
+                        </div>
+                    )}
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 select-none">
+                        {title}
+                    </span>
+                    {badge !== null && (
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                            {badge}
+                        </span>
+                    )}
                 </div>
-                {expanded ? (
-                    <ChevronUp size={20} className="text-gray-500" />
-                ) : (
-                    <ChevronDown size={20} className="text-gray-500" />
-                )}
+
+                <ChevronDown
+                    size={16}
+                    className={clsx(
+                        "text-slate-400 transition-transform duration-300 flex-shrink-0",
+                        expanded && "rotate-180"
+                    )}
+                />
             </button>
 
+            {/* Content — smooth grid-rows animation */}
             <div
                 className={clsx(
-                    "bg-white dark:bg-[#1e1e1e] transition-all duration-300 ease-in-out overflow-hidden",
-                    expanded ? "max-h-[1000px] opacity-100 p-4" : "max-h-0 opacity-0 p-0"
+                    "grid transition-all duration-300 ease-in-out",
+                    expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                 )}
             >
-                {children}
+                <div className="overflow-hidden">
+                    <div className="bg-white dark:bg-slate-800 p-4">
+                        {children}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -44,6 +86,7 @@ ExpansionPanel.propTypes = {
     children: PropTypes.node.isRequired,
     defaultExpanded: PropTypes.bool,
     icon: PropTypes.elementType,
+    badge: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default ExpansionPanel;

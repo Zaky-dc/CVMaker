@@ -8,38 +8,53 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Roboto", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
       },
       colors: {
         primary: {
-          light: "#42a5f5",
-          DEFAULT: "#2196f3",
-          dark: "#1565c0",
+          light: "#818cf8",   // indigo-400
+          DEFAULT: "#6366f1", // indigo-500
+          dark: "#4338ca",    // indigo-700
         },
         secondary: {
-          light: "#ba68c8",
-          DEFAULT: "#9c27b0",
-          dark: "#7b1fa2",
+          light: "#c084fc",   // purple-400
+          DEFAULT: "#a855f7", // purple-500
+          dark: "#7e22ce",    // purple-800
         },
         surface: {
-            light: "#ffffff",
-            dark: "#121212",
+          light: "#ffffff",
+          dark: "#0f172a",
         },
         background: {
-            light: "#f5f5f5",
-            dark: "#121212", 
-        }
+          light: "#f1f5f9",
+          dark: "#0f172a",
+        },
+        nav: {
+          DEFAULT: "#1e1b4b",  // deep indigo nav rail
+          dark: "#0f0e1a",
+        },
       },
       boxShadow: {
-        "material-1": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-        "material-2": "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
-        "material-3": "0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)",
+        "material-1": "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.14)",
+        "material-2": "0 3px 6px rgba(0,0,0,0.10), 0 3px 6px rgba(0,0,0,0.14)",
+        "material-3": "0 10px 30px rgba(0,0,0,0.14), 0 6px 10px rgba(0,0,0,0.10)",
+        "glass": "0 8px 32px rgba(31,41,55,0.12), inset 0 1px 0 rgba(255,255,255,0.1)",
+        "preview": "0 25px 50px rgba(0,0,0,0.25), 0 10px 20px rgba(0,0,0,0.15)",
       },
       scale: {
         "25": ".25",
-        "50": ".5",
+        "50": ".50",
+        "60": ".60",
+        "70": ".70",
         "75": ".75",
-       }
+        "80": ".80",
+        "85": ".85",
+        "90": ".90",
+        "95": ".95",
+      },
+      transitionTimingFunction: {
+        "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      },
     },
   },
   plugins: [],

@@ -7,7 +7,6 @@ const MonthPicker = ({ label, name, value, onChange, disabled = false }) => {
     const [isPresent, setIsPresent] = useState(false);
     const [dateValue, setDateValue] = useState("");
 
-    // Parse initial value
     useEffect(() => {
         if (value === "Present" || value === "Atualmente") {
             setIsPresent(true);
@@ -21,61 +20,60 @@ const MonthPicker = ({ label, name, value, onChange, disabled = false }) => {
     const handleDateChange = (e) => {
         const newValue = e.target.value;
         setDateValue(newValue);
-        if (onChange) {
-            onChange({ target: { name, value: newValue } });
-        }
+        if (onChange) onChange({ target: { name, value: newValue } });
     };
 
     const handleCheckboxChange = (e) => {
         const checked = e.target.checked;
         setIsPresent(checked);
-        if (checked) {
-            // If checked, value becomes specific string for "Present"
-            // We'll trust the parent to handle localization of "Present" if needed, 
-            // or we send a constant and translation happens at display time.
-            // ideally we store "Present" and translate it in the view.
-            onChange({ target: { name, value: "Present" } });
-        } else {
-            // Restore last date or empty
-            onChange({ target: { name, value: dateValue } });
-        }
+        onChange({ target: { name, value: checked ? "Present" : dateValue } });
     };
 
     return (
         <div className="w-full">
-            <label className="block mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <label className="block mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {label}
             </label>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                <div className="relative flex-1 min-w-[140px]">
-                    <input
-                        type="month"
-                        name={name}
-                        id={name}
-                        value={dateValue}
-                        onChange={handleDateChange}
-                        disabled={disabled || isPresent}
-                        className="block py-2 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-primary focus:outline-none focus:ring-0 focus:border-primary peer disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                    />
-                </div>
-                <div className="flex items-center group cursor-pointer">
-                    <div className="relative flex items-center">
+            <div className="flex items-center gap-3">
+                <input
+                    type="month"
+                    name={name}
+                    id={name}
+                    value={dateValue}
+                    onChange={handleDateChange}
+                    disabled={disabled || isPresent}
+                    className="flex-1 px-3 py-2 text-sm text-slate-900 dark:text-white
+                     bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600
+                     rounded-lg outline-none transition-all duration-200
+                     focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10
+                     disabled:opacity-40 disabled:cursor-not-allowed"
+                />
+                <label
+                    htmlFor={`${name}-present`}
+                    className="flex items-center gap-2 cursor-pointer group select-none"
+                >
+                    <div className="relative">
                         <input
                             id={`${name}-present`}
                             type="checkbox"
                             checked={isPresent}
                             onChange={handleCheckboxChange}
                             disabled={disabled}
-                            className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer transition-transform group-hover:scale-110"
+                            className="sr-only"
+                        />
+                        <div
+                            className={`w-8 h-4 rounded-full transition-colors duration-200 ${isPresent ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"
+                                }`}
+                        />
+                        <div
+                            className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform duration-200 ${isPresent ? "translate-x-4" : "translate-x-0"
+                                }`}
                         />
                     </div>
-                    <label
-                        htmlFor={`${name}-present`}
-                        className="ms-2 text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-primary transition-colors cursor-pointer select-none"
-                    >
+                    <span className="text-xs text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
                         {t.present || "Present"}
-                    </label>
-                </div>
+                    </span>
+                </label>
             </div>
         </div>
     );

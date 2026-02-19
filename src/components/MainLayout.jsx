@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Preview from "./preview/Preview";
 import Editor from "./editor/Editor";
+import { usePDFGenerator } from "../hooks/usePDFGenerator";
 import {
   Moon,
   Sun,
@@ -11,16 +12,39 @@ import {
   Save,
   ArrowLeft,
   FileText,
+  Shield,
+  ZoomIn,
+  ZoomOut,
+  Loader2,
 } from "lucide-react";
-import { useReactToPrint } from "react-to-print";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useResume } from "../context/ResumeContext";
+import { pdfTranslations } from "../utils/pdfTranslations";
+import { useNavigate } from "react-router-dom";
 
+// ─── Nav Rail Button ────────────────────────────────────────────────────────
+const NavBtn = ({ icon: Icon, onClick, label, active = false, danger = false, children }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    title={label}
+    className={`nav-btn group ${active ? "active" : ""} ${danger ? "hover:!bg-red-500/20 hover:!text-red-400" : ""}`}
+  >
+    {children || <Icon size={20} />}
+    <span className="nav-btn-tooltip">{label}</span>
+  </button>
+);
+
+// ─── Main Layout ─────────────────────────────────────────────────────────────
 const MainLayout = ({ onBack }) => {
+  const navigate = useNavigate();
   const { user, loginWithGoogle, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
-  const { saveResume, hasUnsavedChanges } = useResume();
+  const { resetResume, saveResume, hasUnsavedChanges } = useResume();
+  const activeTemplateId = useResume().resumeData.metadata.templateId;
+  const PdfTemplate = usePDFGenerator(activeTemplateId);
+  const { resumeData } = useResume();
 
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
@@ -33,75 +57,21 @@ const MainLayout = ({ onBack }) => {
     return false;
   });
 
-  const [sidebarWidth, setSidebarWidth] = useState(450);
+  // Zoom state (50–100)
+  const [zoom, setZoom] = useState(75);
+
+  // Resizable editor panel
+  const [editorWidth, setEditorWidth] = useState(460);
   const [isResizing, setIsResizing] = useState(false);
-  const sidebarRef = useRef(null);
-  const componentRef = useRef(); // A REF que vai capturar o CV
+  const containerRef = useRef(null);
 
-  const startResizing = (e) => {
-    setIsResizing(true);
-    e.preventDefault();
-  };
+  // Download state
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const stopResizing = () => setIsResizing(false);
+  // Print ref for the preview
+  const componentRef = useRef();
 
-  const resize = (e) => {
-    if (isResizing) {
-      const newWidth = e.clientX;
-      if (newWidth > 300 && newWidth < 800) setSidebarWidth(newWidth);
-    }
-  };
-
-  useEffect(() => {
-    if (isResizing) {
-      window.addEventListener("mousemove", resize);
-      window.addEventListener("mouseup", stopResizing);
-    } else {
-      window.removeEventListener("mousemove", resize);
-      window.removeEventListener("mouseup", stopResizing);
-    }
-    return () => {
-      window.removeEventListener("mousemove", resize);
-      window.removeEventListener("mouseup", stopResizing);
-    };
-  }, [isResizing]);
-
-  // --- MÁGICA DA IMPRESSÃO CORRIGIDA ---
-  const handlePrint = useReactToPrint({
-    contentRef: componentRef,
-    documentTitle: `Resume_${new Date().toISOString().split("T")[0]}`,
-    pageStyle: `
-      @page {
-        size: A4;
-        margin: 0;
-      }
-      @media print {
-        /* Esconde TUDO da interface do site */
-        body * {
-          visibility: hidden;
-        }
-        /* Torna apenas o currículo visível */
-        .printable-area, .printable-area * {
-          visibility: visible !important;
-        }
-        /* Posiciona o currículo no topo absoluto para o PDF não sair em branco */
-        .printable-area {
-          position: fixed !important;
-          left: 0 !important;
-          top: 0 !important;
-          width: 210mm !important;
-          height: auto !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          transform: none !important; /* Anula o scale do mobile */
-          background-color: white !important;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-      }
-    `,
-  });
-
+  // Dark mode sync
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -112,85 +82,311 @@ const MainLayout = ({ onBack }) => {
     }
   }, [darkMode]);
 
+  // ── Resize Logic ──
+  const startResizing = (e) => {
+    setIsResizing(true);
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const onMove = (e) => {
+      if (!containerRef.current) return;
+      const navRailWidth = 72;
+      const x = e.clientX - navRailWidth;
+      if (x >= 360 && x <= 720) setEditorWidth(x);
+    };
+    const onUp = () => setIsResizing(false);
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [isResizing]);
+
+  // ── Handlers ──
+  const handleLogout = async () => {
+    resetResume();
+    await logout();
+  };
+
+  const handleSave = async () => {
+    await saveResume();
+  };
+
+  const handleDownload = async () => {
+    if (!PdfTemplate || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const { pdf } = await import("@react-pdf/renderer");
+      const tPdf = pdfTranslations[language] || pdfTranslations.en;
+
+      // Generate the PDF blob
+      const blob = await pdf(<PdfTemplate data={resumeData} t={tPdf} />).toBlob();
+
+      // Open the PDF in a new tab. Chrome on Linux blocks programmatic downloads
+      // from blob URLs, but window.open() always works. The user can save from
+      // the PDF viewer (Ctrl+S or the viewer's own download button).
+      const url = URL.createObjectURL(blob);
+      const tab = window.open(url, "_blank");
+      if (!tab) {
+        // Popup blocked — fall back to location redirect
+        window.location.href = url;
+      }
+      // Revoke after 60s so the tab has time to load the PDF
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+      console.error("PDF download error:", err);
+      alert(`Erro ao gerar o PDF: ${err.message}`);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+
+
   return (
-    <div className="flex h-screen flex-col md:flex-row overflow-hidden bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300">
-      
-      {/* SIDEBAR / EDITOR */}
-      <aside
-        ref={sidebarRef}
-        style={{
-          width: typeof window !== "undefined" && window.innerWidth >= 768 ? `${sidebarWidth}px` : "100%",
-        }}
-        className="h-1/2 md:h-full flex flex-col border-r border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark shadow-lg z-10 overflow-hidden"
-      >
-        <header className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-primary text-white shadow-md flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <button onClick={onBack} className="p-2 rounded-full hover:bg-white/10 transition-colors group">
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <FileText className="text-white w-5 h-5" />
-              </div>
-              <h1 className="text-lg font-bold tracking-tight uppercase tracking-widest">cvMaker</h1>
-            </div>
+    <div
+      ref={containerRef}
+      className={`flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 transition-colors duration-300 ${isResizing ? "select-none cursor-col-resize" : ""}`}
+    >
+      {/* ── Nav Rail ─────────────────────────────────────────── */}
+      <nav className="flex flex-col items-center flex-shrink-0 w-[72px] h-full bg-gradient-to-b from-indigo-950 via-indigo-900 to-indigo-950 border-r border-white/5 shadow-lg z-20 py-4 gap-1 print:hidden">
+        {/* Logo */}
+        <button
+          onClick={onBack}
+          className="flex flex-col items-center gap-1 mb-4 group"
+          title={t.back}
+        >
+          <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+            <FileText size={20} className="text-indigo-300" />
           </div>
+          <span className="text-[9px] text-indigo-400 font-semibold tracking-widest uppercase">cv</span>
+        </button>
 
-          <div className="flex items-center gap-2">
-            {/* Seletor de Idiomas Restaurado */}
-            <div className="flex items-center bg-primary-dark/20 rounded-lg p-0.5 mr-1">
-              <button onClick={() => setLanguage("en")} className={`px-2 py-1 text-[10px] font-bold rounded-md ${language === "en" ? "bg-white text-primary" : "text-white/70"}`}>EN</button>
-              <button onClick={() => setLanguage("pt")} className={`px-2 py-1 text-[10px] font-bold rounded-md ${language === "pt" ? "bg-white text-primary" : "text-white/70"}`}>PT</button>
-            </div>
+        <div className="w-8 h-px bg-white/10 mb-2" />
 
-            {user ? (
-              <div className="flex items-center gap-2">
-                <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-white/50" />
-                <button onClick={logout} className="p-2 hover:bg-white/10 rounded-full"><LogOut size={18} /></button>
+        {/* Save */}
+        <NavBtn
+          icon={Save}
+          onClick={handleSave}
+          label={hasUnsavedChanges ? (t.save || "Save") : (t.saved || "Saved")}
+          active={hasUnsavedChanges}
+        >
+          <div className="relative">
+            <Save size={20} />
+            {hasUnsavedChanges && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-indigo-900 animate-pulse" />
+            )}
+          </div>
+        </NavBtn>
+
+        {/* Download */}
+        <NavBtn
+          icon={isDownloading ? Loader2 : Download}
+          onClick={handleDownload}
+          label={t.download || "Download PDF"}
+        >
+          {isDownloading ? (
+            <Loader2 size={20} className="animate-spin text-indigo-300" />
+          ) : (
+            <Download size={20} />
+          )}
+        </NavBtn>
+
+        <div className="w-8 h-px bg-white/10 my-1" />
+
+        {/* Language switcher */}
+        <div className="flex flex-col items-center gap-0.5 nav-btn group relative">
+          <button
+            onClick={() => setLanguage("pt")}
+            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${language === "pt" ? "bg-white/20 text-white" : "text-indigo-400 hover:text-white"}`}
+          >
+            PT
+          </button>
+          <div className="w-5 h-px bg-white/20" />
+          <button
+            onClick={() => setLanguage("en")}
+            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${language === "en" ? "bg-white/20 text-white" : "text-indigo-400 hover:text-white"}`}
+          >
+            EN
+          </button>
+        </div>
+
+        {/* Dark mode */}
+        <NavBtn
+          icon={darkMode ? Sun : Moon}
+          onClick={() => setDarkMode(!darkMode)}
+          label={darkMode ? (t.lightMode || "Light Mode") : (t.darkMode || "Dark Mode")}
+        />
+
+        {/* Admin */}
+        {user?.role === "admin" && (
+          <NavBtn
+            icon={Shield}
+            onClick={() => navigate("/admin")}
+            label="Admin Panel"
+          />
+        )}
+
+        {/* Spacer */}
+        <div className="flex-1" />
+        <div className="w-8 h-px bg-white/10 mb-1" />
+
+        {/* User */}
+        {user ? (
+          <>
+            {user.photoURL ? (
+              <div className="relative group cursor-default nav-btn">
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName}
+                  className="w-9 h-9 rounded-full border-2 border-white/30 object-cover"
+                  title={user.displayName}
+                />
+                <span className="nav-btn-tooltip">{user.displayName}</span>
               </div>
             ) : (
-              <button onClick={loginWithGoogle} className="p-2 hover:bg-white/10 rounded-full"><LogIn size={18} /></button>
+              <NavBtn icon={UserIcon} onClick={() => { }} label={user.displayName || "Profile"} />
             )}
+            <NavBtn icon={LogOut} onClick={handleLogout} label={t.logout || "Logout"} danger />
+          </>
+        ) : (
+          <button
+            onClick={loginWithGoogle}
+            className="flex flex-col items-center gap-1 nav-btn group text-indigo-300 hover:text-white"
+            title={t.login || "Sign In"}
+          >
+            <LogIn size={20} />
+            <span className="nav-btn-tooltip">{t.login || "Sign In"}</span>
+          </button>
+        )}
+      </nav>
 
-            <button onClick={saveResume} className={`p-2 rounded-full ${hasUnsavedChanges ? "bg-yellow-500 animate-pulse" : "bg-green-600"}`}>
-              <Save size={18} className="text-white" />
-            </button>
-
-            <button onClick={handlePrint} className="p-2 hover:bg-white/10 rounded-full">
-              <Download size={18} />
-            </button>
-
-            <button onClick={() => setDarkMode(!darkMode)} className="p-2 hover:bg-white/10 rounded-full">
-              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+      {/* ── Editor Panel ─────────────────────────────────────── */}
+      <aside
+        style={{ width: `${editorWidth}px` }}
+        className="flex flex-col h-full flex-shrink-0 border-r border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-[#0f172a] z-10 overflow-hidden print:hidden"
+      >
+        {/* Editor header bar */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900 flex-shrink-0">
+          <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-300 tracking-wide uppercase">
+            {t.editor || "Editor"}
+          </h2>
+          <div className="text-xs text-slate-400 dark:text-slate-500">
+            {hasUnsavedChanges ? (
+              <span className="text-amber-500 font-medium flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block" />
+                {t.unsavedChanges || "Unsaved changes"}
+              </span>
+            ) : (
+              <span className="text-emerald-500 font-medium flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                {t.saved || "Saved"}
+              </span>
+            )}
           </div>
-        </header>
+        </div>
 
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        {/* Editor scroll area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
           <Editor />
         </div>
       </aside>
 
-      {/* RESIZE BAR */}
-      <div onMouseDown={startResizing} className="hidden md:flex w-1 h-full cursor-col-resize hover:bg-primary/50 transition-colors z-20"></div>
+      {/* ── Resize Handle ────────────────────────────────────── */}
+      <div
+        onMouseDown={startResizing}
+        className={`w-1 flex-shrink-0 h-full cursor-col-resize z-20 group print:hidden
+          hover:bg-indigo-400/40 transition-colors duration-150
+          ${isResizing ? "bg-indigo-500/50" : "bg-slate-200 dark:bg-slate-700/50"}`}
+      />
 
-      {/* PREVIEW SIDE */}
-      <main className="flex-1 h-1/2 md:h-full bg-gray-100 dark:bg-[#1e1e1e] p-4 md:p-8 flex justify-center items-start overflow-y-auto relative">
-        <div className="bg-white text-black shadow-2xl w-[210mm] min-h-[297mm] origin-top transform scale-[0.45] sm:scale-[0.55] md:scale-[0.65] lg:scale-[0.75] xl:scale-[0.85] transition-transform duration-300">
-          
-          {/* AQUI ESTÁ O TRUQUE: O div da REF tem a classe 'printable-area' */}
-          <div ref={componentRef} className="printable-area w-full h-full bg-white">
-            <Preview />
+      {/* ── Preview Panel ─────────────────────────────────────── */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative preview-bg">
+        {/* Preview toolbar */}
+        <div className="flex items-center justify-between px-5 py-2.5 border-b border-slate-300/60 dark:border-slate-700/60 bg-slate-100/80 dark:bg-slate-900/70 backdrop-blur-sm flex-shrink-0 print:hidden">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            Live Preview
+          </span>
+
+          {/* Zoom controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setZoom((z) => Math.max(45, z - 5))}
+              className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
+            >
+              <ZoomOut size={14} />
+            </button>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min={45}
+                max={100}
+                step={5}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="w-24 h-1 accent-indigo-500 cursor-pointer"
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono w-8 text-right">
+                {zoom}%
+              </span>
+            </div>
+            <button
+              onClick={() => setZoom((z) => Math.min(100, z + 5))}
+              className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
+            >
+              <ZoomIn size={14} />
+            </button>
           </div>
 
         </div>
 
-        {/* Botão flutuante mobile */}
+        {/* Scrollable preview area */}
+        <div className="flex-1 overflow-auto flex justify-center items-start py-8 px-4">
+          {/* Shadow rig to contain the transformed A4 */}
+          <div
+            style={{
+              width: `${210 * (zoom / 100)}mm`,
+              minHeight: `${297 * (zoom / 100)}mm`,
+              flexShrink: 0,
+            }}
+          >
+            <div
+              style={{
+                transform: `scale(${zoom / 100})`,
+                transformOrigin: "top left",
+                width: "210mm",
+                minHeight: "297mm",
+              }}
+            >
+              <div className="bg-white text-black shadow-preview" id="preview-wrapper">
+                <Preview ref={componentRef} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating download button overlay */}
         <button
-          onClick={handlePrint}
-          className="fixed bottom-6 right-6 md:hidden z-50 p-4 bg-primary text-white rounded-full shadow-2xl active:scale-90 transition-transform"
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className="absolute bottom-6 right-6 flex items-center gap-2.5 px-5 py-3 rounded-2xl
+                     bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500
+                     text-white font-semibold text-sm shadow-material-3
+                     transition-all duration-200 hover:scale-105 hover:shadow-lg
+                     disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
+                     print:hidden"
         >
-          <Download size={24} />
+          {isDownloading ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <Download size={18} />
+          )}
+          {isDownloading ? "A gerar PDF..." : (t.download || "Download PDF")}
         </button>
       </main>
     </div>

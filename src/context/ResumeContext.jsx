@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "./AuthContext";
-import { db } from "../services/firebase";
+import { rtdb } from "../services/firebase";
 import { ref, onValue, set } from "firebase/database";
 import { uploadToCloudinary } from "../services/cloudinary";
 import { blobToBase64 } from "../utils/fileUtils";
 
 const ResumeContext = createContext();
+
+
 
 const initialResumeState = {
   metadata: {
@@ -86,7 +88,7 @@ export const ResumeProvider = ({ children }) => {
   useEffect(() => {
     if (user) {
       // Logged in: Load from Firebase RTDB
-      const userRef = ref(db, `users/${user.uid}/resume`);
+      const userRef = ref(rtdb, `users/${user.uid}/resume`);
       const unsubscribe = onValue(userRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -178,7 +180,7 @@ export const ResumeProvider = ({ children }) => {
       setResumeData(updatedData);
 
       if (user) {
-        const userRef = ref(db, `users/${user.uid}/resume`);
+        const userRef = ref(rtdb, `users/${user.uid}/resume`);
         await set(userRef, updatedData);
       }
 
