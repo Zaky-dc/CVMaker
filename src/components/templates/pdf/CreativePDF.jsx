@@ -7,13 +7,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         fontFamily: 'Helvetica',
+        paddingBottom: 38,
     },
     sidebar: {
         width: '32%',
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 42,
-        paddingBottom: 40,
         color: '#FFFFFF',
         flexGrow: 0,
     },
@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
         paddingLeft: 28,
         paddingRight: 28,
         paddingTop: 42,
-        paddingBottom: 40,
         flexGrow: 0,
     },
     photo: {

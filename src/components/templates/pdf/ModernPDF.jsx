@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         fontFamily: 'Helvetica',
+        paddingBottom: 38,
     },
     // Main content takes 67%, sidebar 33%
     // Both use flexGrow to fill the page height — this ensures the sidebar
@@ -16,7 +17,6 @@ const styles = StyleSheet.create({
         paddingLeft: 30,
         paddingRight: 28,
         paddingTop: 42,
-        paddingBottom: 40,
         flexGrow: 0,
     },
     sidebar: {
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
         paddingLeft: 18,
         paddingRight: 18,
         paddingTop: 42,
-        paddingBottom: 40,
         flexGrow: 0,
     },
     header: {
