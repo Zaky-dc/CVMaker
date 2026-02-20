@@ -140,7 +140,7 @@ const ClassicPDF = ({ data, t }) => {
         switch (sectionId) {
             case "experience":
                 return experience && experience.length > 0 && (
-                    <View style={styles.section} key={sectionId} wrap={true}>
+                    <View style={styles.section} key={sectionId}>
                         <Text style={styles.sectionTitle}>{i18n.experience}</Text>
                         {experience.map((exp, index) => (
                             <View key={index} style={{ marginBottom: 10 }}>
@@ -156,7 +156,7 @@ const ClassicPDF = ({ data, t }) => {
                 );
             case "internships":
                 return internships && internships.length > 0 && (
-                    <View style={styles.section} key={sectionId} wrap={true}>
+                    <View style={styles.section} key={sectionId}>
                         <Text style={styles.sectionTitle}>{i18n.internships}</Text>
                         {internships.map((intern, index) => (
                             <View key={index} style={{ marginBottom: 10 }}>
@@ -172,7 +172,7 @@ const ClassicPDF = ({ data, t }) => {
                 );
             case "education":
                 return education && education.length > 0 && (
-                    <View style={styles.section} key={sectionId} wrap={true}>
+                    <View style={styles.section} key={sectionId}>
                         <Text style={styles.sectionTitle}>{i18n.education}</Text>
                         {education.map((edu, index) => (
                             <View key={index} style={{ marginBottom: 8 }}>
