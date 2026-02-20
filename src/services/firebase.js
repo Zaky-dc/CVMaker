@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, enableNetwork } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
@@ -21,3 +21,8 @@ export const db = getFirestore(app); // Firestore
 export const rtdb = getDatabase(app); // Realtime Database
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+// Explicitly enable Firestore network to prevent 'client is offline' errors
+// This is needed because Firestore may start in an offline state in some environments
+enableNetwork(db).catch(() => { });
+

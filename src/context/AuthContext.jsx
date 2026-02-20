@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDocFromServer, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, googleProvider, db } from "../services/firebase";
 import PropTypes from "prop-types";
 
@@ -11,18 +11,19 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     // Helper: fetch Firestore doc with retries (handles race condition on login popup)
-    const fetchUserDoc = async (uid, retries = 3, delayMs = 1000) => {
+    const fetchUserDoc = async (uid, retries = 4, delayMs = 1000) => {
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
                 const userDocRef = doc(db, "users", uid);
-                const userDoc = await getDoc(userDocRef);
+                // getDocFromServer forces a direct server fetch, bypassing local cache
+                const userDoc = await getDocFromServer(userDocRef);
                 return { ref: userDocRef, doc: userDoc };
             } catch (error) {
                 const isOffline = error.code === 'unavailable' || error.message?.includes('offline');
                 if (isOffline && attempt < retries) {
                     console.warn(`Firestore offline, retrying in ${delayMs}ms... (attempt ${attempt}/${retries})`);
                     await new Promise(resolve => setTimeout(resolve, delayMs));
-                    delayMs *= 2; // exponential backoff
+                    delayMs *= 2; // exponential backoff: 1s → 2s → 4s → 8s
                 } else {
                     throw error;
                 }
