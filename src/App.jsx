@@ -3,6 +3,7 @@ import { ResumeProvider } from "./context/ResumeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import UnsupportedScreen, { useIsDesktop } from "./components/UnsupportedScreen";
 import LoadingScreen from "./components/ui/LoadingScreen";
@@ -19,9 +20,24 @@ const LandingPageWrapper = () => {
 const MainLayoutWrapper = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const { loading } = useAuth();
 
+  if (loading) return <LoadingScreen />;
   if (!isDesktop) return <UnsupportedScreen />;
   return <MainLayout onBack={() => navigate('/')} />;
+};
+
+const AdminPanelWrapper = () => {
+  const { loading, user } = useAuth();
+  const navigate = useNavigate();
+
+  if (loading) return <LoadingScreen />;
+  if (!user || user.role !== 'admin') {
+    // Not logged in or not admin — redirect to home
+    navigate('/');
+    return null;
+  }
+  return <AdminPanel />;
 };
 
 function App() {
@@ -34,7 +50,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<LandingPageWrapper />} />
                 <Route path="/app" element={<MainLayoutWrapper />} />
-                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/admin" element={<AdminPanelWrapper />} />
               </Routes>
             </Suspense>
           </ResumeProvider>

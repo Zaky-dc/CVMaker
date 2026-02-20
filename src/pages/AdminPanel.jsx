@@ -1,23 +1,17 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 import { getAllUsers, updateUserRole, searchUsersByEmail } from "../services/userService";
 import { Search, Shield, User, Check, X, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const AdminPanel = () => {
-    const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user && user.role !== 'admin') {
-            navigate('/');
-            return;
-        }
         fetchUsers();
-    }, [user, navigate]);
+    }, []);
 
     const fetchUsers = async () => {
         setLoading(true);
