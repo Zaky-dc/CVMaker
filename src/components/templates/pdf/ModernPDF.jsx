@@ -5,26 +5,24 @@ import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/render
 const styles = StyleSheet.create({
     page: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#f3f4f6',
         fontFamily: 'Helvetica',
+        paddingTop: 42,
         paddingBottom: 38,
     },
     // Main content takes 67%, sidebar 33%
-    // Both use flexGrow to fill the page height — this ensures the sidebar
-    // background colour fills all pages even when content is shorter.
+    // Page backgroundColor fills the sidebar column on ALL pages even when sidebar has no content.
     mainContent: {
         width: '67%',
         paddingLeft: 30,
         paddingRight: 28,
-        paddingTop: 42,
+        backgroundColor: '#FFFFFF',
         flexGrow: 0,
     },
     sidebar: {
         width: '33%',
-        backgroundColor: '#f3f4f6',
         paddingLeft: 18,
         paddingRight: 18,
-        paddingTop: 42,
         flexGrow: 0,
     },
     header: {

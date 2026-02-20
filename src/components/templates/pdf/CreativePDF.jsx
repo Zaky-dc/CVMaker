@@ -5,15 +5,14 @@ import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/render
 const styles = StyleSheet.create({
     page: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
         fontFamily: 'Helvetica',
+        paddingTop: 42,
         paddingBottom: 38,
     },
     sidebar: {
         width: '32%',
         paddingLeft: 20,
         paddingRight: 20,
-        paddingTop: 42,
         color: '#FFFFFF',
         flexGrow: 0,
     },
@@ -21,7 +20,7 @@ const styles = StyleSheet.create({
         width: '68%',
         paddingLeft: 28,
         paddingRight: 28,
-        paddingTop: 42,
+        backgroundColor: '#FFFFFF',
         flexGrow: 0,
     },
     photo: {
@@ -218,7 +217,7 @@ const CreativePDF = ({ data, t }) => {
     const themeColor = metadata.themeColor || '#8B5CF6';
 
     const dyn = useMemo(() => StyleSheet.create({
-        sidebar: { backgroundColor: themeColor },
+        pageBg: { backgroundColor: themeColor },
         textColor: { color: themeColor },
         barColor: { backgroundColor: themeColor },
     }), [themeColor]);
@@ -404,9 +403,9 @@ const CreativePDF = ({ data, t }) => {
 
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
+            <Page size="A4" style={[styles.page, dyn.pageBg]}>
                 {/* ── Sidebar ── */}
-                <View style={[styles.sidebar, dyn.sidebar]}>
+                <View style={styles.sidebar}>
                     {/* Avatar */}
                     <View style={{ marginBottom: 16, alignItems: 'center' }}>
                         {personal.photoUrl ? (
