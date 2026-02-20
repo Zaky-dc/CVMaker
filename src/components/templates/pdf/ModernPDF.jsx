@@ -64,25 +64,40 @@ const styles = StyleSheet.create({
     section: {
         marginBottom: 14,
     },
+    sectionTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+        paddingBottom: 4,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+    },
+    sectionAccent: {
+        width: 3,
+        height: 11,
+        borderRadius: 2,
+        marginRight: 6,
+        flexShrink: 0,
+    },
     sectionTitle: {
         fontSize: 11,
         fontFamily: 'Helvetica-Bold',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
+    },
+    sidebarTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 7,
+        paddingBottom: 4,
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
-        marginBottom: 6,
-        paddingBottom: 2,
+        borderBottomColor: '#D1D5DB',
     },
     sidebarTitle: {
         fontSize: 10,
         fontFamily: 'Helvetica-Bold',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
-        borderBottomWidth: 1,
-        borderBottomColor: '#D1D5DB',
-        marginBottom: 7,
-        paddingBottom: 2,
     },
     text: {
         fontSize: 9.5,
@@ -185,7 +200,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!personal.birthDate && !personal.civilStatus && !personal.gender && !personal.nationality) return null;
                 return (
                     <View style={styles.section} key={id} wrap={false}>
-                        <Text style={[styles.sidebarTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.personalDetails}</Text>
+                        <View style={styles.sidebarTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sidebarTitle, dyn.themeColor]}>{i18n.personalDetails}</Text>
+                        </View>
                         {personal.birthDate ? <><Text style={styles.metaLabel}>{i18n.birthDate}</Text><Text style={styles.metaValue}>{personal.birthDate}</Text></> : null}
                         {personal.civilStatus ? <><Text style={styles.metaLabel}>{i18n.civilStatus}</Text><Text style={styles.metaValue}>{personal.civilStatus}</Text></> : null}
                         {personal.gender ? <><Text style={styles.metaLabel}>{i18n.gender}</Text><Text style={styles.metaValue}>{personal.gender}</Text></> : null}
@@ -196,7 +214,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!skills || !skills.length) return null;
                 return (
                     <View style={styles.section} key={id} wrap={false}>
-                        <Text style={[styles.sidebarTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.skills}</Text>
+                        <View style={styles.sidebarTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sidebarTitle, dyn.themeColor]}>{i18n.skills}</Text>
+                        </View>
                         {skills.map((skill, i) => (
                             <View key={i} style={styles.skillItem}>
                                 <View style={[styles.skillDot, dyn.themeBg]} />
@@ -209,7 +230,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!languages || !languages.length) return null;
                 return (
                     <View style={styles.section} key={id} wrap={false}>
-                        <Text style={[styles.sidebarTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.languages}</Text>
+                        <View style={styles.sidebarTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sidebarTitle, dyn.themeColor]}>{i18n.languages}</Text>
+                        </View>
                         {languages.map((lang, i) => {
                             const profMap = {
                                 'native': 5, 'nativo': 5, 'c2': 5,
@@ -245,7 +269,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!certificates || !certificates.length) return null;
                 return (
                     <View style={styles.section} key={id} wrap={false}>
-                        <Text style={[styles.sidebarTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.certificates}</Text>
+                        <View style={styles.sidebarTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sidebarTitle, dyn.themeColor]}>{i18n.certificates}</Text>
+                        </View>
                         {certificates.map((cert, i) => (
                             <View key={i} style={{ marginBottom: 6 }}>
                                 <Text style={styles.boldText}>{cert.name || ''}</Text>
@@ -267,7 +294,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!experience || !experience.length) return null;
                 return (
                     <View style={styles.section} key={id}>
-                        <Text style={[styles.sectionTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.experience}</Text>
+                        <View style={styles.sectionTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.experience}</Text>
+                        </View>
                         {experience.map((exp, i) => (
                             <View key={i} style={{ marginBottom: 9 }} wrap={false}>
                                 <View style={styles.jobHeader}>
@@ -284,7 +314,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!internships || !internships.length) return null;
                 return (
                     <View style={styles.section} key={id}>
-                        <Text style={[styles.sectionTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.internships}</Text>
+                        <View style={styles.sectionTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.internships}</Text>
+                        </View>
                         {internships.map((intern, i) => (
                             <View key={i} style={{ marginBottom: 9 }} wrap={false}>
                                 <View style={styles.jobHeader}>
@@ -301,7 +334,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!education || !education.length) return null;
                 return (
                     <View style={styles.section} key={id}>
-                        <Text style={[styles.sectionTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.education}</Text>
+                        <View style={styles.sectionTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.education}</Text>
+                        </View>
                         {education.map((edu, i) => (
                             <View key={i} style={{ marginBottom: 8 }} wrap={false}>
                                 <View style={styles.jobHeader}>
@@ -318,7 +354,10 @@ const ModernPDF = ({ data, t }) => {
                 if (!references || !references.length) return null;
                 return (
                     <View style={styles.section} key={id}>
-                        <Text style={[styles.sectionTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.references}</Text>
+                        <View style={styles.sectionTitleRow}>
+                            <View style={[styles.sectionAccent, dyn.themeBg]} />
+                            <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.references}</Text>
+                        </View>
                         {references.map((ref, i) => (
                             <View key={i} style={{ marginBottom: 6 }} wrap={false}>
                                 <Text style={styles.boldText}>{ref.name || ''}</Text>
@@ -363,7 +402,10 @@ const ModernPDF = ({ data, t }) => {
                     {/* Summary */}
                     {personal.summary ? (
                         <View style={styles.section}>
-                            <Text style={[styles.sectionTitle, dyn.themeColor, dyn.themeBorder]}>{i18n.summary}</Text>
+                            <View style={styles.sectionTitleRow}>
+                                <View style={[styles.sectionAccent, dyn.themeBg]} />
+                                <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.summary}</Text>
+                            </View>
                             <Text style={styles.text}>{personal.summary}</Text>
                         </View>
                     ) : null}
