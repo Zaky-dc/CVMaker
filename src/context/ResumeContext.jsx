@@ -150,7 +150,7 @@ export const ResumeProvider = ({ children }) => {
 
   const saveResume = async () => {
     try {
-      let updatedData = { ...resumeData };
+      let updatedData = { ...resumeData, personal: { ...resumeData.personal } };
 
       // Handle Photo
       if (pendingPhoto) {
@@ -160,7 +160,7 @@ export const ResumeProvider = ({ children }) => {
         } else {
           photoUrl = await blobToBase64(pendingPhoto);
         }
-        updatedData.personal.photoUrl = photoUrl;
+        updatedData = { ...updatedData, personal: { ...updatedData.personal, photoUrl } };
         setPendingPhoto(null);
       }
 
@@ -172,7 +172,7 @@ export const ResumeProvider = ({ children }) => {
         } else {
           signatureUrl = await blobToBase64(pendingSignature);
         }
-        updatedData.personal.signatureUrl = signatureUrl;
+        updatedData = { ...updatedData, personal: { ...updatedData.personal, signatureUrl } };
         setPendingSignature(null);
       }
 

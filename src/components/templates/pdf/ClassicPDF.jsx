@@ -11,7 +11,10 @@ const safeDate = (start, end) => {
 
 const styles = StyleSheet.create({
     page: {
-        padding: 30,
+        paddingTop: 45,
+        paddingBottom: 40,
+        paddingLeft: 50,
+        paddingRight: 50,
         backgroundColor: '#FFFFFF',
         fontFamily: 'Times-Roman',
     },
@@ -44,16 +47,16 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     section: {
-        marginBottom: 15,
+        marginBottom: 14,
     },
     sectionTitle: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 'bold',
         textTransform: 'uppercase',
         borderBottomWidth: 1,
         borderBottomColor: '#D1D5DB',
-        paddingBottom: 2,
-        marginBottom: 10,
+        paddingBottom: 3,
+        marginBottom: 8,
     },
     jobHeader: {
         flexDirection: 'row',
