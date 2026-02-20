@@ -10,22 +10,37 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Helper: fetch Firestore doc with retries (handles race condition on login popup)
+    const fetchUserDoc = async (uid, retries = 3, delayMs = 1000) => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const userDocRef = doc(db, "users", uid);
+                const userDoc = await getDoc(userDocRef);
+                return { ref: userDocRef, doc: userDoc };
+            } catch (error) {
+                const isOffline = error.code === 'unavailable' || error.message?.includes('offline');
+                if (isOffline && attempt < retries) {
+                    console.warn(`Firestore offline, retrying in ${delayMs}ms... (attempt ${attempt}/${retries})`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                    delayMs *= 2; // exponential backoff
+                } else {
+                    throw error;
+                }
+            }
+        }
+    };
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                console.log("Auth State Changed: User Logged In", currentUser.uid);
                 try {
-                    const userDocRef = doc(db, "users", currentUser.uid);
-                    console.log("Checking Firestore for user document...");
-                    const userDoc = await getDoc(userDocRef);
+                    const { ref: userDocRef, doc: userDoc } = await fetchUserDoc(currentUser.uid);
                     let userData = {};
 
                     if (userDoc.exists()) {
-                        console.log("User document found in Firestore.");
                         userData = userDoc.data();
                     } else {
-                        console.log("User document NOT found. Creating new document...");
-                        // Create new user document
+                        // New user — create document
                         userData = {
                             email: currentUser.email,
                             role: 'free',
@@ -34,21 +49,12 @@ export const AuthProvider = ({ children }) => {
                             photoURL: currentUser.photoURL,
                         };
                         await setDoc(userDocRef, userData);
-                        console.log("User document created successfully!");
                     }
 
-                    // Merge auth user with firestore data (role)
-                    setUser({
-                        ...currentUser,
-                        role: userData.role || 'free',
-                    });
+                    setUser({ ...currentUser, role: userData.role || 'free' });
                 } catch (error) {
-                    console.error("🔥 Error fetching/creating user role in Firestore:", error);
-                    if (error.code === 'permission-denied') {
-                        console.error("⚠️ PERMISSION DENIED: Check your Firestore Security Rules in Firebase Console!");
-                        console.error("Make sure rules allow read/write for authenticated users: allow read, write: if request.auth != null;");
-                    }
-                    // Fallback to auth user with default role
+                    console.error("Error fetching user role from Firestore:", error.code, error.message);
+                    // Fallback — let user in with 'free' role
                     setUser({ ...currentUser, role: 'free' });
                 }
             } else {
@@ -58,6 +64,7 @@ export const AuthProvider = ({ children }) => {
         });
         return () => unsubscribe();
     }, []);
+
 
     const loginWithGoogle = async () => {
         try {
