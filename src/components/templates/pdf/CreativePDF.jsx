@@ -238,7 +238,7 @@ const CreativePDF = ({ data, t }) => {
 
     // ── Sidebar section title helper ─────────────────────────────────────────
     const SidebarTitle = ({ label }) => (
-        <View>
+        <View wrap={false}>
             <Text style={styles.sidebarTitle}>{label}</Text>
             <View style={styles.sidebarDivider} />
         </View>
@@ -250,7 +250,7 @@ const CreativePDF = ({ data, t }) => {
             case 'personal':
                 if (!personal.birthDate && !personal.civilStatus && !personal.gender && !personal.nationality) return null;
                 return (
-                    <View key={id} style={styles.sidebarSection} wrap={false}>
+                    <View key={id} style={styles.sidebarSection}>
                         <SidebarTitle label={i18n.personalDetails} />
                         {personal.birthDate ? <><Text style={{ fontSize: 7, opacity: 0.7, textTransform: 'uppercase', color: '#fff' }}>{i18n.birthDate}</Text><Text style={styles.sidebarText}>{personal.birthDate}</Text></> : null}
                         {personal.civilStatus ? <><Text style={{ fontSize: 7, opacity: 0.7, textTransform: 'uppercase', color: '#fff' }}>{i18n.civilStatus}</Text><Text style={styles.sidebarText}>{personal.civilStatus}</Text></> : null}
@@ -261,7 +261,7 @@ const CreativePDF = ({ data, t }) => {
             case 'skills':
                 if (!skills || !skills.length) return null;
                 return (
-                    <View key={id} style={styles.sidebarSection} wrap={false}>
+                    <View key={id} style={styles.sidebarSection}>
                         <SidebarTitle label={i18n.skills} />
                         <View style={styles.skillsContainer}>
                             {skills.map((skill, i) => (
@@ -273,7 +273,7 @@ const CreativePDF = ({ data, t }) => {
             case 'languages':
                 if (!languages || !languages.length) return null;
                 return (
-                    <View key={id} style={styles.sidebarSection} wrap={false}>
+                    <View key={id} style={styles.sidebarSection}>
                         <SidebarTitle label={i18n.languages} />
                         {languages.map((lang, i) => {
                             const profMap = {
