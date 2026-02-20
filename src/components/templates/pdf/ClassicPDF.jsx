@@ -143,12 +143,12 @@ const ClassicPDF = ({ data, t }) => {
                     <View style={styles.section} key={sectionId} wrap={true}>
                         <Text style={styles.sectionTitle}>{i18n.experience}</Text>
                         {experience.map((exp, index) => (
-                            <View key={index} style={{ marginBottom: 10 }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={index} style={{ marginBottom: 10 }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.roleTitle}>{exp.role}</Text>
                                     <Text style={styles.date}>{exp.date || safeDate(exp.startDate, exp.endDate)}</Text>
                                 </View>
-                                <Text style={styles.company}>{exp.company}</Text>
+                                <Text style={styles.company} wrap={false}>{exp.company}</Text>
                                 <Text style={styles.description}>{exp.description}</Text>
                             </View>
                         ))}
@@ -159,12 +159,12 @@ const ClassicPDF = ({ data, t }) => {
                     <View style={styles.section} key={sectionId} wrap={true}>
                         <Text style={styles.sectionTitle}>{i18n.internships}</Text>
                         {internships.map((intern, index) => (
-                            <View key={index} style={{ marginBottom: 10 }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={index} style={{ marginBottom: 10 }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.roleTitle}>{intern.role}</Text>
                                     <Text style={styles.date}>{safeDate(intern.startDate, intern.endDate)}</Text>
                                 </View>
-                                <Text style={styles.company}>{intern.company}</Text>
+                                <Text style={styles.company} wrap={false}>{intern.company}</Text>
                                 <Text style={styles.description}>{intern.description}</Text>
                             </View>
                         ))}
@@ -175,12 +175,12 @@ const ClassicPDF = ({ data, t }) => {
                     <View style={styles.section} key={sectionId} wrap={true}>
                         <Text style={styles.sectionTitle}>{i18n.education}</Text>
                         {education.map((edu, index) => (
-                            <View key={index} style={{ marginBottom: 8 }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={index} style={{ marginBottom: 8 }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.roleTitle}>{edu.school}</Text>
                                     <Text style={styles.date}>{edu.date || safeDate(edu.startDate, edu.endDate)}</Text>
                                 </View>
-                                <Text style={styles.description}>{edu.degree}</Text>
+                                <Text style={styles.description} wrap={false}>{edu.degree}</Text>
                                 {edu.description && <Text style={{ fontSize: 10, color: '#4B5563', marginTop: 2 }}>{edu.description}</Text>}
                             </View>
                         ))}
