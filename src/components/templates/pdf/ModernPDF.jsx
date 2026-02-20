@@ -303,12 +303,12 @@ const ModernPDF = ({ data, t }) => {
                             <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.experience}</Text>
                         </View>
                         {experience.map((exp, i) => (
-                            <View key={i} style={{ marginBottom: 9 }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={i} style={{ marginBottom: 9 }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.boldText}>{exp.role || ''}</Text>
                                     <Text style={styles.italicText}>{exp.date || safeDate(exp.startDate, exp.endDate)}</Text>
                                 </View>
-                                <Text style={[styles.text, { fontSize: 8.5, marginBottom: 2 }]}>{exp.company || ''}</Text>
+                                <Text style={[styles.text, { fontSize: 8.5, marginBottom: 2 }]} wrap={false}>{exp.company || ''}</Text>
                                 {exp.description ? <Text style={styles.text}>{exp.description}</Text> : null}
                             </View>
                         ))}
@@ -323,12 +323,12 @@ const ModernPDF = ({ data, t }) => {
                             <Text style={[styles.sectionTitle, dyn.themeColor]}>{i18n.internships}</Text>
                         </View>
                         {internships.map((intern, i) => (
-                            <View key={i} style={{ marginBottom: 9 }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={i} style={{ marginBottom: 9 }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.boldText}>{intern.role || ''}</Text>
                                     <Text style={styles.italicText}>{safeDate(intern.startDate, intern.endDate)}</Text>
                                 </View>
-                                <Text style={[styles.text, { fontSize: 8.5, marginBottom: 2 }]}>{intern.company || ''}</Text>
+                                <Text style={[styles.text, { fontSize: 8.5, marginBottom: 2 }]} wrap={false}>{intern.company || ''}</Text>
                                 {intern.description ? <Text style={styles.text}>{intern.description}</Text> : null}
                             </View>
                         ))}

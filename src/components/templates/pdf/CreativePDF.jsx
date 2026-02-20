@@ -316,12 +316,12 @@ const CreativePDF = ({ data, t }) => {
                     <View key={id} style={styles.section}>
                         <SectionHeader label={i18n.experience} />
                         {experience.map((exp, i) => (
-                            <View key={i} style={{ marginBottom: 11, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#E5E7EB' }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={i} style={{ marginBottom: 11, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#E5E7EB' }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.roleTitle}>{exp.role || ''}</Text>
                                     <Text style={styles.dateTag}>{exp.date || safeDate(exp.startDate, exp.endDate)}</Text>
                                 </View>
-                                <Text style={[{ fontSize: 9.5, fontFamily: 'Helvetica-Bold', marginBottom: 2 }, dyn.textColor]}>{exp.company || ''}</Text>
+                                <Text style={[{ fontSize: 9.5, fontFamily: 'Helvetica-Bold', marginBottom: 2 }, dyn.textColor]} wrap={false}>{exp.company || ''}</Text>
                                 {exp.description ? <Text style={styles.description}>{exp.description}</Text> : null}
                             </View>
                         ))}
@@ -333,12 +333,12 @@ const CreativePDF = ({ data, t }) => {
                     <View key={id} style={styles.section}>
                         <SectionHeader label={i18n.internships} />
                         {internships.map((intern, i) => (
-                            <View key={i} style={{ marginBottom: 11, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#E5E7EB' }} wrap={false}>
-                                <View style={styles.jobHeader}>
+                            <View key={i} style={{ marginBottom: 11, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#E5E7EB' }}>
+                                <View style={styles.jobHeader} wrap={false}>
                                     <Text style={styles.roleTitle}>{intern.role || ''}</Text>
                                     <Text style={styles.dateTag}>{safeDate(intern.startDate, intern.endDate)}</Text>
                                 </View>
-                                <Text style={[{ fontSize: 9.5, fontFamily: 'Helvetica-Bold', marginBottom: 2 }, dyn.textColor]}>{intern.company || ''}</Text>
+                                <Text style={[{ fontSize: 9.5, fontFamily: 'Helvetica-Bold', marginBottom: 2 }, dyn.textColor]} wrap={false}>{intern.company || ''}</Text>
                                 {intern.description ? <Text style={styles.description}>{intern.description}</Text> : null}
                             </View>
                         ))}
