@@ -9,6 +9,20 @@ const styles = StyleSheet.create({
         paddingTop: 42,
         paddingBottom: 38,
     },
+    // Full-height background layers (fixed = repeat on every page)
+    // Sidebar layer: left 32%, filled with themeColor (from dyn.sidebarBg)
+    sidebarBgLayer: {
+        position: 'absolute',
+        top: 0, bottom: 0, left: 0,
+        width: '32%',
+    },
+    // Main content layer: right 68%, always white
+    mainContentBgLayer: {
+        position: 'absolute',
+        top: 0, bottom: 0,
+        left: '32%', right: 0,
+        backgroundColor: '#FFFFFF',
+    },
     sidebar: {
         width: '32%',
         paddingLeft: 20,
@@ -20,22 +34,7 @@ const styles = StyleSheet.create({
         width: '68%',
         paddingLeft: 28,
         paddingRight: 28,
-        backgroundColor: '#FFFFFF',
         flexGrow: 0,
-    },
-    // Fixed white overlays that appear on EVERY generated page,
-    // ensuring the margin areas stay white even when page bg = themeColor
-    marginTopOverlay: {
-        position: 'absolute',
-        top: 0, left: 0, right: 0,
-        height: 42,
-        backgroundColor: '#FFFFFF',
-    },
-    marginBottomOverlay: {
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        height: 38,
-        backgroundColor: '#FFFFFF',
     },
     photo: {
         width: 90,
@@ -232,6 +231,7 @@ const CreativePDF = ({ data, t }) => {
 
     const dyn = useMemo(() => StyleSheet.create({
         pageBg: { backgroundColor: themeColor },
+        sidebarBg: { backgroundColor: themeColor },
         textColor: { color: themeColor },
         barColor: { backgroundColor: themeColor },
     }), [themeColor]);
@@ -417,10 +417,10 @@ const CreativePDF = ({ data, t }) => {
 
     return (
         <Document>
-            <Page size="A4" style={[styles.page, dyn.pageBg]}>
-                {/* Fixed white overlays so sidebar color stays ONLY in content area */}
-                <View fixed style={styles.marginTopOverlay} />
-                <View fixed style={styles.marginBottomOverlay} />
+            <Page size="A4" style={styles.page}>
+                {/* Fixed full-height background layers: sidebar (themeColor) and main content (white) */}
+                <View fixed style={[styles.sidebarBgLayer, dyn.sidebarBg]} />
+                <View fixed style={styles.mainContentBgLayer} />
                 {/* ── Sidebar ── */}
                 <View style={styles.sidebar}>
                     {/* Avatar */}
