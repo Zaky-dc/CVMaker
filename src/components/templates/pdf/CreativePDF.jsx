@@ -23,6 +23,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         flexGrow: 0,
     },
+    // Fixed white overlays that appear on EVERY generated page,
+    // ensuring the margin areas stay white even when page bg = themeColor
+    marginTopOverlay: {
+        position: 'absolute',
+        top: 0, left: 0, right: 0,
+        height: 42,
+        backgroundColor: '#FFFFFF',
+    },
+    marginBottomOverlay: {
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: 38,
+        backgroundColor: '#FFFFFF',
+    },
     photo: {
         width: 90,
         height: 90,
@@ -404,6 +418,9 @@ const CreativePDF = ({ data, t }) => {
     return (
         <Document>
             <Page size="A4" style={[styles.page, dyn.pageBg]}>
+                {/* Fixed white overlays so sidebar color stays ONLY in content area */}
+                <View fixed style={styles.marginTopOverlay} />
+                <View fixed style={styles.marginBottomOverlay} />
                 {/* ── Sidebar ── */}
                 <View style={styles.sidebar}>
                     {/* Avatar */}
