@@ -13,15 +13,19 @@ const styles = StyleSheet.create({
     // background colour fills all pages even when content is shorter.
     mainContent: {
         width: '67%',
-        padding: 28,
-        paddingTop: 28,
+        paddingLeft: 30,
+        paddingRight: 28,
+        paddingTop: 42,
+        paddingBottom: 40,
         flexGrow: 0,
     },
     sidebar: {
         width: '33%',
         backgroundColor: '#f3f4f6',
-        padding: 18,
-        paddingTop: 28,
+        paddingLeft: 18,
+        paddingRight: 18,
+        paddingTop: 42,
+        paddingBottom: 40,
         flexGrow: 0,
     },
     header: {
