@@ -53,12 +53,14 @@ const styles = StyleSheet.create({
         fontFamily: 'Helvetica-Bold',
         textTransform: 'uppercase',
         letterSpacing: 1.5,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.3)',
         paddingBottom: 4,
-        marginBottom: 8,
         color: '#FFFFFF',
-        opacity: 0.9,
+    },
+    sidebarDivider: {
+        height: 1,
+        backgroundColor: '#FFFFFF',
+        opacity: 0.25,
+        marginBottom: 8,
     },
     sidebarText: {
         fontSize: 8.5,
@@ -219,6 +221,14 @@ const CreativePDF = ({ data, t }) => {
         barColor: { backgroundColor: themeColor },
     }), [themeColor]);
 
+    // ── Sidebar section title helper ─────────────────────────────────────────
+    const SidebarTitle = ({ label }) => (
+        <View>
+            <Text style={styles.sidebarTitle}>{label}</Text>
+            <View style={styles.sidebarDivider} />
+        </View>
+    );
+
     // ── Sidebar sections ──────────────────────────────────────────────────────
     const renderSidebarSection = (id) => {
         switch (id) {
@@ -226,7 +236,7 @@ const CreativePDF = ({ data, t }) => {
                 if (!personal.birthDate && !personal.civilStatus && !personal.gender && !personal.nationality) return null;
                 return (
                     <View key={id} style={styles.sidebarSection} wrap={false}>
-                        <Text style={styles.sidebarTitle}>{i18n.personalDetails}</Text>
+                        <SidebarTitle label={i18n.personalDetails} />
                         {personal.birthDate ? <><Text style={{ fontSize: 7, opacity: 0.7, textTransform: 'uppercase', color: '#fff' }}>{i18n.birthDate}</Text><Text style={styles.sidebarText}>{personal.birthDate}</Text></> : null}
                         {personal.civilStatus ? <><Text style={{ fontSize: 7, opacity: 0.7, textTransform: 'uppercase', color: '#fff' }}>{i18n.civilStatus}</Text><Text style={styles.sidebarText}>{personal.civilStatus}</Text></> : null}
                         {personal.gender ? <><Text style={{ fontSize: 7, opacity: 0.7, textTransform: 'uppercase', color: '#fff' }}>{i18n.gender}</Text><Text style={styles.sidebarText}>{personal.gender}</Text></> : null}
@@ -237,7 +247,7 @@ const CreativePDF = ({ data, t }) => {
                 if (!skills || !skills.length) return null;
                 return (
                     <View key={id} style={styles.sidebarSection} wrap={false}>
-                        <Text style={styles.sidebarTitle}>{i18n.skills}</Text>
+                        <SidebarTitle label={i18n.skills} />
                         <View style={styles.skillsContainer}>
                             {skills.map((skill, i) => (
                                 <Text key={i} style={styles.skillTag}>{typeof skill === 'string' ? skill : skill.name}</Text>
@@ -249,7 +259,7 @@ const CreativePDF = ({ data, t }) => {
                 if (!languages || !languages.length) return null;
                 return (
                     <View key={id} style={styles.sidebarSection} wrap={false}>
-                        <Text style={styles.sidebarTitle}>{i18n.languages}</Text>
+                        <SidebarTitle label={i18n.languages} />
                         {languages.map((lang, i) => {
                             const profMap = {
                                 'native': 5, 'nativo': 5, 'c2': 5,
@@ -410,7 +420,7 @@ const CreativePDF = ({ data, t }) => {
 
                     {/* Contact */}
                     <View style={styles.sidebarSection}>
-                        <Text style={styles.sidebarTitle}>{i18n.contact}</Text>
+                        <SidebarTitle label={i18n.contact} />
                         {personal.email ? <View style={styles.contactItem}><Text style={styles.sidebarText}>{personal.email}</Text></View> : null}
                         {personal.phone ? <View style={styles.contactItem}><Text style={styles.sidebarText}>{personal.phone}</Text></View> : null}
                         {personal.website ? <View style={styles.contactItem}><Text style={styles.sidebarText}>{personal.website}</Text></View> : null}
